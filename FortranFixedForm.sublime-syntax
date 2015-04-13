@@ -1,0 +1,574 @@
+%YAML 1.2
+---
+name: Fortran (Fixed Form)
+file_extensions: [f, F, f77, F77, for, FOR, fpp, FPP]
+scope: source.fixedform-fortran
+
+# TO DO:
+# control flow:
+#   forall
+#   do concurrent
+#   while
+#   return
+#   stop
+#   then
+#   select
+#   case
+#   where
+#   elsewhere
+#   cycle
+#   exit
+#   error stop
+# program units:
+#   data
+#   external
+#   program
+#   function (result)?
+#   subroutine
+#   interface
+#   module
+#   submodule
+#   contains
+# misc program scopes:
+#   associate
+# variable attributes:
+#   save
+#   implicit
+#   dimension
+#   parameter
+#   allocatable
+#   intent
+#   pointer
+#   target
+#   private
+#   public
+#   protected
+#   contiguous
+# subroutine attributes:
+#   recursive
+#   pure
+#   elemental
+# import:
+#   import
+#   include
+#   use, only
+# pointer commands:
+#   nullify
+# special types:
+#   procedure
+#   enum
+# derived data types:
+#   type
+#   sequence
+#   abstract
+#   extends
+#   % (member access)
+# procedure attributes:
+#   non_overridable
+# coarrays:
+#   sync all
+#   sync images
+#   sync memory
+#   lock
+#   unlock
+#   codimension
+
+
+# other:
+#   assign
+#   backspace
+#   block data
+#   endfile
+#   entry
+#   equivalence
+#   inquire
+#   intrinsic
+#   namelist
+#   operator
+#   optional
+
+#   asynchronous
+#   bind
+#   class
+#   deferred
+#   end *enum
+#   enumerator
+#   final
+#   generic
+#   nopass
+#   pass
+#   value
+#   volatile
+#   block
+#   critical
+
+
+
+
+
+contexts:
+  main:
+    # Try to keep all the modern/punchcard differences at the top here
+    # comments
+    - match: ^[Cc](?=\b|[Cc])
+      push: comment
+    - match: ^\*
+      push: comment
+
+    # line continuation marks (fixed-form)
+    - match: ^     (\d|\*)
+      scope: comment.line-continuation.numeric.fortran
+
+    # tabs are illegal
+    - match: \t
+      scope: invalid.illegal.tab.fortran
+
+
+
+
+
+
+
+
+    # strings
+    - match: \'
+      push: singlestring
+    - match: (\")
+      push: doublestring
+
+    # use statements etc
+    - match: (?xi:^  \s*  (use)  \s+  (\w+)  ( (,)  \s*  (only)  \s*  (:) )?  )
+      captures:
+        0: use.statement.fortran
+        1: keyword.use.fortran
+        2: storage.type.module.fortran
+        3: optional.group.use.statement.fortran
+        5: keyword.only.fortran
+
+    # implicit statement
+    - match: (?xi:(implicit)  \s+  (none|.*)  )
+      captures:
+        0: implicit.statement.fortran
+        1: keyword.implicit.fortran
+        2: meta.implicit-specification.fortran
+
+    # OpenMP
+    - match: (?x:^  \s*  ([!]\$)  .*  $)
+      scope: support.other.openmp.fortran
+
+
+
+
+
+    # program definition
+    - match: ^\s*(?i:(program))\b\s+(\p{Alpha}\w*)\s*$
+      captures:
+        1: storage.type.program.fortran
+        2: entity.name.program.fortran
+      push: program
+
+    # module, type definition
+    - match: (?xi:^  \s*  (module|type)  \s+  (\w+)  \s*  $)
+      captures:
+        1: keyword.module.fortran
+        2: entity.name.type.fortran
+    # FIXME end module
+    - match: (?xi:^  \s*  (end)  \s+  (module|type)  \s+  (\w+)?  \s*  $)
+      captures:
+        1: keyword.module.fortran
+        2: keyword.module.fortran
+        3: storage.module.fortran
+
+    # function/subroutine definition with parameter list
+    - match: (?xi:^  \s*  ([a-zA-Z\(\)]*)  (?<!end)  \s*  (function|subroutine)\b  \s+  (\p{Alpha}\w*)  \s*  (\(|&) )
+      captures:
+        1: storage.type.fortran
+        2: storage.type.function.fortran
+        3: entity.name.function.fortran
+      push: subroutine_parameter_list
+
+    # subroutine definition without parameter list
+    - match: (?xi:^  \s*  ([a-zA-Z\(\)]*)  (?<!end)  \s*  (subroutine)\b  \s+  (\p{Alpha}\w*)  \s*  $)
+      captures:
+        1: storage.type.fortran
+        2: storage.type.function.fortran
+        3: entity.name.function.fortran
+      # push: subroutines
+
+
+
+
+    # if statement
+    - match: (?xi:\b  (if|else\s*if|elif|endif)  \b  )
+      scope: keyword.control.fortran
+    # do loop
+    - match: (?xi:^  \s*  (do)  \b  (\s+\d+\s+)?  \s*  )
+      captures:
+        0: meta.loop.fortran
+        1: keyword.control.fortran
+        2: variable.parameter.fortran
+    # - match: \b(?i:(if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|pause|do|end\s*do|while|cycle))\b
+    #   scope: keyword.control.fortran
+
+
+    # statements controling the flow of the program
+    - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|pause|do|end\s*do|while|cycle))\b
+      scope: keyword.control.fortran
+
+    # programming units
+    - match: \b(?i:(entry|return|contains|include))\b
+      scope: keyword.control.programming-units.fortran
+    # rename import operator/pointer assignment operator
+    - match: =>
+      scope: keyword.operator.fortran
+    # C style comparison operators
+    - match: (==|<=|>=)
+      scope: keyword.operator.c-style.fortran
+    # variable assignment operator
+    - match: \s=\s
+      scope: keyword.operator.fortran
+    # floating point literals with an exponent (must come before -+ operators)
+    - match: (?xi:(?<!\w)  [-+]?  (\d+ | \d*\.\d+ | \d+\.\d*)  (e[-+]?\d+)  \b)
+      scope: constant.numeric.floating-point.fortran
+    # arithmetic operators
+    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
+      scope: keyword.operator.fortran
+    # logical operators
+    - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
+      scope: keyword.operator.logical.fortran
+
+    # types
+    - match: \b(?i:(integer|real|complex|logical|character|double\s+precision))\b
+      scope: storage.type.fortran
+    # other
+    - match: \b(?i:(operator|assignment))\b
+      scope: storage.type.fortran
+    # # variable declaration
+    # - match: ^\s*(?i:(integer|real|complex|logical|character|double\s+precision))\b
+    #   scope: storage.type.fortran
+    #   push: variabledeclaration
+
+    # variable intent
+    - match: (?xi:\b  (intent)  \s* \(  \s*  (in|out|inout)  \s*  \)  )
+      captures:
+        0: meta.intent.fortran
+        1: keyword.intent.fortran
+        2: constant.language.fortran
+
+    # variable dimension
+    - match: (?xi:\b  (dimension)  \s* \(  [^)]*  \)  )
+      captures:
+        0: meta.dimension.fortran
+        1: keyword.dimension.fortran
+
+    # dimension statement
+    - match: (?xi:^  \s*  (dimension)  \b  )
+      captures:
+        1: keyword.dimension.fortran
+
+    # variable with asterisk as dimension
+    - match: (?xi:(\w+)  \( (\*) \))
+      captures:
+        1: variable.parameter.fortran
+        2: variable.parameter.fortran
+
+    # continue label, possibly numbered
+    - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
+      captures:
+        0: meta.continue-label.fortran
+        1: variable.parameter.fortran
+        2: keyword.continue.fortran
+    # labeled statement
+    - match: ^(    \d|   \d\d|  \d\d\d)
+      scope: variable.parameter.fortran
+    # goto statement
+    - match: (?xi:\b  (go\s*to)  \s+  (\d+))
+      captures:
+        1: keyword.goto.fortran
+        2: variable.parameter.fortran
+
+
+    # data type attributes
+    - match: \b(?i:(allocatable|equivalence|parameter|external|intrinsic|save))\b
+      scope: storage.modifier.fortran
+
+    # IO: open, close
+    - match: (?xi:\b  (close|open)  \s*  \(  )
+      captures:
+        1: support.function.fortran
+
+    # IO: print, write, rewrite, read
+    - match: (?xi:\b  (print|write|rewrite|read)  \s*  \(  )
+      captures:
+        1: support.function.fortran
+
+    # IO: print, write, rewrite, read
+    - match: (?xi:\b  (print|write|rewrite|read)  \s*  \(  )
+      captures:
+        1: support.function.fortran
+
+    # IO: pause, wait, rewind, flush
+    - match: (?xi:\b  (pause|wait|rewind|flush)  \s*  \(  )
+      captures:
+        1: support.function.fortran
+
+    # IO: format statement
+    - match: (?xi:^  \s*  (\d+)  \s+  (format)  \(  )
+      captures:
+        0: format.statement.fortran
+        1: constant.numeric.fortran
+        2: keyword.format.fortran
+      push: formatstring
+
+    # allocate, deallocate
+    - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
+      captures:
+        1: support.function.fortran
+        2: variable.other.fortran
+
+
+    # preprocessor logic
+    - match: (?xi:^  \s*  \#  \s*  (define|if|ifdef|ifndef|else|endif)  \b  .*  $)
+      scope: keyword.control.fortran
+    # preprocessor include
+    - match: (?xi:^  \s*  \#  \s*  (include|import)  \b  )
+      scope: keyword.control.import.include.fortran
+      push: preprocessor_include
+    # preprocessor warning
+    - match: (?xi:^  \s*  \#  \s*  (error|warning)  \b  )
+      captures:
+        1: keyword.control.import.error.fortran
+      push: preprocessor_errorwarning
+
+    # common block with name
+    - match: (?xi:^  \s*  (common)  \s*  (/\w+/)  \s*  )
+      captures:
+        0: common.statement.fortran
+        1: keyword.common.fortran
+        2: storage.type.common-block-name.fortran
+      push: common
+    # common block with no name given
+    - match: (?xi:^  \s*  (common)  \s+  )
+      captures:
+        0: common.statement.fortran
+        1: keyword.common.fortran
+      push: common
+    # data statement
+    - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
+      captures:
+        1: keyword.data.fortran
+        2: storage.data.fortran
+    # block data statement
+    - match: (?xi:^  \s*  (block\s*data)  \s+  (\w+)  )
+      captures:
+        1: keyword.block-data.fortran
+        2: storage.block-data.fortran
+      push: blockdata
+
+
+
+
+
+
+    # built-in constants
+    - match: (?i:\.true\.|\.false\.)
+      scope: constant.language.fortran
+
+    # numeric literals (without an exponent)
+    - match: \b[0-9.]*\b
+      scope: constant.numeric.fortran
+
+    # Intrinsic functions in Fortran 90
+    # https://www.nsc.liu.se/~boein/f77to90/a5.html
+    # 1. Function which determines if a certain argument is in an actual argument list
+    - match: (?x:\b  (?i:present)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 2. Numerical functions
+    - match: (?x:\b  (?i:abs|aimag|aint|anint|cmplx|conjg|dble|dim|dprod|int|max|min|mod|nint|real|sign)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    - match: (?x:\b  (?i:ceiling|floor|modulo)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 3. Mathematical functions
+    - match: (?x:\b  (?i:acos|asin|atan|atan2|cos|cosh|exp|log|log10|sin|sinh|sqrt|tan|tanh)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 4. Character string functions
+    - match: (?x:\b  (?i:achar|adjustl|adjustr|char|iachar|ichar|index|len_trim|lge|lgt|lle|llt|repeat|scan|trim|verify)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 5. Character string function for request
+    - match: (?x:\b  (?i:len)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 6. Kind functions
+    - match: (?x:\b  (?i:kind|selected_int_kind|selected_real_kind)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 7. Logical function
+    - match: (?x:\b  (?i:logical)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 8. Numerical inquiry functions
+    - match: (?x:\b  (?i:digits|epsilon|huge|maxexponent|minexponent|precision|radix|range|tiny)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 9. Bit inquiry function
+    - match: (?x:\b  (?i:bit_size)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 10. Bit manipulation functions
+    - match: (?x:\b  (?i:btest|iand|ibclr|ibits|ibset|ieor|ior|ishft|ishftc|not)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 11. Transfer functions
+    - match: (?x:\b  (?i:transfer)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 12. Floating-point manipulation functions
+    - match: (?x:\b  (?i:exponent|fraction|nearest|rrspacing|scale|set_exponent|spacing)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 13. Vector- and matrix-multiplication functions
+    - match: (?x:\b  (?i:dot_product|matmul)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 14. Array functions
+    - match: (?x:\b  (?i:all|any|count|maxval|minval|product|sum)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 15. Array inquiry functions
+    - match: (?x:\b  (?i:allocated|lbound|shape|size|ubound)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 16. Array construct functions
+    - match: (?x:\b  (?i:merge)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 17. ARRAY reshape function
+    - match: (?x:\b  (?i:reshape)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 18. ARRAY manipulation functions
+    - match: (?x:\b  (?i:cshift|eoshift|transpose)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 19. Array location functions
+    - match: (?x:\b  (?i:maxloc|minloc)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # 20. Pointer inquiry functions
+    - match: (?x:\b  (?i:associated)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+
+    # 21. Intrinsic subroutines
+    # Time routines / Bit copy routine / Random number routines
+    - match: (?x:\b  (call)  \s+  (?i:date_and_time|system_clock|count_max|mvbits|random_number|random_seed)  \b  (?=\s*\()  )
+      captures:
+        1: keyword.call.fortran
+        2: support.function.fortran
+
+    # generic subroutine call
+    - match: (?xi:\b  (call)  \s*  (\w+)  \s*  (?=\(|$)  )
+      captures:
+        1: keyword.call.fortran
+        2: meta.subroutine-call.fortran
+    # generic function call (or array access)
+    - match: (?x:(\p{Alpha}\w+)  \s*  (?=\()  )
+      scope: meta.function-call.fortran
+
+    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type) (\s+\p{Alpha}\w*)? )  )
+      captures:
+        1: keyword.subroutine-end.fortran
+        2: storage.type.fortran
+      pop: true
+    # generic end statement
+    - match: (?xi:^  \s*  (end)  \s*  $)
+      captures:
+        1: keyword.control.fortran
+
+
+
+
+
+
+  # additional contexts
+
+  preprocessor_include:
+    - meta_scope: meta.preprocessor.fortran.include
+    - match: (?=(?://|/\*))|$\n?
+      pop: true
+    - match: \'
+      push: singlestring
+    - match: \"
+      push: doublestring
+    - match: (<)
+      push: include_angle_brackets
+  include_angle_brackets:
+    - meta_scope: string.quoted.other.lt-gt.include.fortran
+    - match: (>)
+      pop: true
+  preprocessor_errorwarning:
+    - meta_scope: meta.preprocessor.diagnostic.fortran
+    - match: $\n?
+      pop: true
+
+
+  singlestring:
+    - meta_scope: string.quoted.single.fortran
+    - match: \'\'
+      scope: constant.character.escape.apostrophe.fortran
+    - match: (\')
+      pop: true
+  doublestring:
+    - meta_scope: string.quoted.double.fortran
+    - match: \"\"
+      scope: constant.character.escape.quote.fortran
+    - match: (\")
+      pop: true
+
+
+  comment:
+    - meta_scope: comment.line.fortran
+    - match: $\n?
+      pop: true
+
+  program:
+    - meta_content_scope: meta.subroutine.fortran
+    - include: main
+    - match: (?x:((?i:end))($|\s*(?i:program)(\s+\p{Alpha}\w*)?))
+      captures:
+        1: keyword.other.fortran
+        2: storage.type.fortran
+      pop: true
+
+  subroutine_parameter_list:
+    - meta_content_scope: meta.subroutine-parameter-list.fortran
+    - match: \w+ # variable name in the parameter list
+      scope: variable.parameter.fortran
+    - match: \)
+      pop: true
+  #     set: subroutines # close parameter list scope, push subroutines scope
+  # subroutines:
+  #   - meta_content_scope: meta.subroutine.fortran
+  #   - include: main
+  #   - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine) (\s+\p{Alpha}\w*)? )  )
+  #     captures:
+  #       1: keyword.subroutine-end.fortran
+  #       2: storage.type.fortran
+  #     pop: true
+
+  common:
+    - meta_content_scope: meta.common-block.fortran
+    - match: $\n?
+      pop: true
+
+  blockdata:
+    - meta_content_scope: meta.common-block.fortran
+    - match: \b(?i:end)\b
+      pop: true
+
+  formatstring:
+    - meta_content_scope: meta.format-string.fortran
+    - match: \'
+      push: singlestring
+    - match: (\")
+      push: doublestring
+    - match: (?xi:(\d+)?  (pe|[aeigfx])  (\d+)?  \.?  (\d+)?  )
+      scope: constant.numeric.fortran   # whole thing
+    - match: \)
+      pop: true
+
+  # variabledeclaration:
+  #   - meta_content_scope: meta.variable-declaration.fortran
+  #   - include: comments
+  #   - match: (?<=\,)\s*((?i:save|implicit|dimension|parameter|allocatable|intent|pointer|target|private|public|protected|contiguous))
+  #     captures:
+  #       1: keyword.variable-attribute.fortran
+  #   - match: (::)
+  #     scope: keyword.operator.fortran
+  #   - match: $\n?
+  #     pop: true
+

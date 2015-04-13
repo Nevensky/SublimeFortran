@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key><string>Indentation Rules</string>
+	<key>scope</key><string>source.modern-fortran</string>
+	<key>settings</key>
+	<dict>
+		<key>increaseIndentPattern</key>
+		<string>(?xi)
+	    ^ \s* (program|subroutine|function|module|do|if|where|forall)  \b  .* $
+	|   ^ \s* (else\s*if|elsewhere) \b .* $
+		</string>
+
+		<key>decreaseIndentPattern</key>
+		<string>(?xi)
+	    ^ \s* (end)  \b  \s* $
+	|   ^ \s* end\s*(program|subroutine|function|module|do|if|where|forall)  \b  \s* $
+	|   ^ \s* (else|else\s*if|else\s*where)  \b
+		</string>
+
+<!-- 		<key>unIndentedLinePattern</key>
+		<string>(?xi)
+	    #.* \s* $
+		</string>
+ -->
+		<!-- Future possibilities -->
+		<!-- <key>bracketIndentNextLinePattern</key> -->
+		<!-- <key>indentSquareBrackets</key><false/> -->
+	</dict>
+</dict>
+</plist>
