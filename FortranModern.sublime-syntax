@@ -231,7 +231,7 @@ contexts:
     - match: \s=\s
       scope: keyword.operator.fortran
     # floating point literals with an exponent (must come before -+ operators)
-    - match: (?xi:(?<!\w)  [-+]?  (\d+ | \d*\.\d+ | \d+\.\d*)  (e[-+]?\d+)  \b)
+    - match: (?xi:(?<!\w)  [-+]?  (\d+ | \d*\.\d+ | \d+\.\d*)  ([ed][-+]?\d+)  \b)
       scope: constant.numeric.floating-point.fortran
     # arithmetic operators
     - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
