@@ -110,7 +110,9 @@ contexts:
   main:
     # Try to keep all the modern/punchcard differences at the top here
     # comments
-    - match: ^[Cc](?=\b|[Cc])
+    - match: ^[Cc]
+      push: comment
+    - match: \!
       push: comment
     - match: ^\*
       push: comment
