@@ -103,6 +103,10 @@ scope: source.modern-fortran
 
 
 
+variables:
+  ident: '[A-Za-z_][A-Za-z_0-9]*'
+  type: '(?xi:integer|real|complex|logical|character|double\s+precision|type\(a\) )'
+  modifier: '(?xi:elemental|pure|recursive)'
 
 contexts:
   main:
@@ -155,7 +159,7 @@ contexts:
 
 
     # program definition
-    - match: ^\s*(?i:(program))\b\s+(\p{Alpha}\w*)\s*$
+    - match: ^\s*(?i:(program))\b\s+({{ident}})\s*$
       captures:
         1: storage.type.program.fortran
         2: entity.name.program.fortran
@@ -173,19 +177,38 @@ contexts:
         2: keyword.module.fortran
         3: storage.module.fortran
 
-    # function/subroutine definition with parameter list
-    - match: (?xi:^  \s*  ([a-zA-Z\(\)]*)  (?<!end)  \s*  (function|subroutine)\b  \s+  (\p{Alpha}\w*)  \s*  (\(|&) )
+    # enum
+    - match: (?xi:^  \s*  (enum(,\s*bind\(c\))?) \s* $)
       captures:
-        1: storage.type.fortran
-        2: storage.type.function.fortran
-        3: entity.name.function.fortran
+        1: keyword.enum.fortran
+    - match: (?xi:\benumerator\b)
+      scope: keyword.enumerator.fortran
+    # end enum
+    - match: (?xi:^  \s*  (endenum) \b)
+      captures:
+        1: keyword.enum.fortran
+
+    # interface with name
+    - match: (?xi:(?<!end) (interface) \s+ ({{ident}})  \s*  $)
+      captures:
+        1: keyword.function.fortran
+        2: entity.name.function.fortran
+      # push: interface
+
+    # function/subroutine definition with parameter list
+    - match: (?xi:({{modifier}}\s+)? ({{type}}\s+)?  (?<!end)  \s*  (function|subroutine)\b  \s+  ({{ident}})  \s*  (\(|&) )
+      captures:
+        1: keyword.modifier.fortran
+        2: storage.type.fortran
+        3: keyword.function.fortran
+        4: entity.name.function.fortran
       push: subroutine_parameter_list
 
     # subroutine definition without parameter list
-    - match: (?xi:^  \s*  ([a-zA-Z\(\)]*)  (?<!end)  \s*  (subroutine)\b  \s+  (\p{Alpha}\w*)  \s*  $)
+    - match: (?xi:^  \s*  ({{type}})  (?<!end)  \s*  (subroutine)\b  \s+  ({{ident}})  \s*  $)
       captures:
         1: storage.type.fortran
-        2: storage.type.function.fortran
+        2: keyword.function.fortran
         3: entity.name.function.fortran
       # push: subroutines
 
@@ -241,7 +264,10 @@ contexts:
       scope: keyword.operator.logical.fortran
 
     # types
-    - match: \b(?i:(integer|real|complex|logical|character|double\s+precision))\b
+    - match: \b{{type}}\b
+      scope: storage.type.fortran
+    # user defined types
+    - match: \b(?i:(type\([\s\w]+\)))\b
       scope: storage.type.fortran
     # other
     - match: \b(?i:(operator|assignment))\b
@@ -292,7 +318,7 @@ contexts:
 
 
     # data type attributes
-    - match: \b(?i:(allocatable|equivalence|parameter|external|intrinsic|save))\b
+    - match: \b(?i:(allocatable|pointer|target|equivalence|parameter|external|intrinsic|save))\b
       scope: storage.modifier.fortran
 
     # IO: open, close
@@ -331,7 +357,7 @@ contexts:
 
 
     # preprocessor logic
-    - match: (?xi:^  \s*  \#  \s*  (define|if|ifdef|ifndef|else|endif)  \b  .*  $)
+    - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|ifndef|else|endif)  \b  .*  $)
       scope: keyword.control.fortran
     # preprocessor include
     - match: (?xi:^  \s*  \#  \s*  (include|import)  \b  )
@@ -454,15 +480,15 @@ contexts:
         2: support.function.fortran
 
     # generic subroutine call
-    - match: (?xi:\b  (call)  \s*  (\w+)  \s*  (?=\(|$)  )
+    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
       captures:
         1: keyword.call.fortran
         2: meta.subroutine-call.fortran
     # generic function call (or array access)
-    - match: (?x:(\p{Alpha}\w+)  \s*  (?=\()  )
+    - match: (?x:({{ident}})  \s*  (?=\()  )
       scope: meta.function-call.fortran
 
-    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type) (\s+\p{Alpha}\w*)? )  )
+    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type|interface) ({{ident}})? )  )
       captures:
         1: keyword.subroutine-end.fortran
         2: storage.type.fortran
@@ -521,7 +547,7 @@ contexts:
   program:
     - meta_content_scope: meta.subroutine.fortran
     - include: main
-    - match: (?x:((?i:end))($|\s*(?i:program)(\s+\p{Alpha}\w*)?))
+    - match: (?x:((?i:end))($|\s*(?i:program)(\s+{{ident}})?))
       captures:
         1: keyword.other.fortran
         2: storage.type.fortran
@@ -537,7 +563,7 @@ contexts:
   # subroutines:
   #   - meta_content_scope: meta.subroutine.fortran
   #   - include: main
-  #   - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine) (\s+\p{Alpha}\w*)? )  )
+  #   - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine) (\s+{{ident}})? )  )
   #     captures:
   #       1: keyword.subroutine-end.fortran
   #       2: storage.type.fortran
