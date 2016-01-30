@@ -38,9 +38,6 @@ scope: source.modern-fortran
 #   intent
 #   pointer
 #   target
-#   private
-#   public
-#   protected
 #   contiguous
 # subroutine attributes:
 #   recursive
@@ -79,7 +76,6 @@ scope: source.modern-fortran
 #   endfile
 #   entry
 #   equivalence
-#   inquire
 #   intrinsic
 #   namelist
 #   operator
@@ -107,6 +103,7 @@ variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
   type: '(?xi:integer|real|complex|logical|character|double\s+precision|type\(a\) )'
   modifier: '(?xi:elemental|pure|recursive)'
+  attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save)'
 
 contexts:
   main:
@@ -128,7 +125,11 @@ contexts:
 
 
 
-
+    # M4 macro quoted strings
+    - match: \`
+      push: m4macrostring
+    - match: (^\s*dnl\b)
+      push: comment
     # strings
     - match: \'
       push: singlestring
@@ -205,12 +206,31 @@ contexts:
       push: subroutine_parameter_list
 
     # subroutine definition without parameter list
-    - match: (?xi:^  \s*  ({{type}})  (?<!end)  \s*  (subroutine)\b  \s+  ({{ident}})  \s*  $)
+    - match: (?xi:^  \s*  ({{modifier}}\s+)?  \s*  (subroutine)\b  \s+  ({{ident}})  \s*  $)
       captures:
         1: storage.type.fortran
         2: keyword.function.fortran
         3: entity.name.function.fortran
       # push: subroutines
+
+    # generic subroutine call
+    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
+      captures:
+        1: keyword.call.fortran
+        2: meta.subroutine-call.fortran
+    # # generic function call (or array access)
+    # - match: (?x:({{ident}})  \s*  (?=\()  )
+    #   scope: meta.function-call.fortran
+
+    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type|interface) ({{ident}})? )  )
+      captures:
+        1: keyword.subroutine-end.fortran
+        2: storage.type.fortran
+      pop: true
+    # generic end statement
+    - match: (?xi:^  \s*  (end)  \s*  $)
+      captures:
+        1: keyword.control.fortran
 
 
 
@@ -248,7 +268,7 @@ contexts:
     - match: =>
       scope: keyword.operator.fortran
     # C style comparison operators
-    - match: (==|<=|>=)
+    - match: (==|<|>|<=|>=)
       scope: keyword.operator.c-style.fortran
     # variable assignment operator
     - match: \s=\s
@@ -318,7 +338,7 @@ contexts:
 
 
     # data type attributes
-    - match: \b(?i:(allocatable|pointer|target|equivalence|parameter|external|intrinsic|save))\b
+    - match: \b(?i:{{attribute}})\b
       scope: storage.modifier.fortran
 
     # IO: open, close
@@ -336,8 +356,8 @@ contexts:
       captures:
         1: support.function.fortran
 
-    # IO: pause, wait, rewind, flush
-    - match: (?xi:\b  (pause|wait|rewind|flush)  \s*  \(  )
+    # IO: pause, wait, rewind, flush, inquire
+    - match: (?xi:\b  (pause|wait|rewind|flush|inquire)  \s*  \(  )
       captures:
         1: support.function.fortran
 
@@ -393,6 +413,11 @@ contexts:
         1: keyword.block-data.fortran
         2: storage.block-data.fortran
       push: blockdata
+
+    # public/private/protected keywords
+    - match: (?xi:^  \s*  \b(public|private|protected) \b )
+      captures:
+        1: keyword.scope.fortran
 
 
 
@@ -479,24 +504,6 @@ contexts:
         1: keyword.call.fortran
         2: support.function.fortran
 
-    # generic subroutine call
-    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
-      captures:
-        1: keyword.call.fortran
-        2: meta.subroutine-call.fortran
-    # generic function call (or array access)
-    - match: (?x:({{ident}})  \s*  (?=\()  )
-      scope: meta.function-call.fortran
-
-    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type|interface) ({{ident}})? )  )
-      captures:
-        1: keyword.subroutine-end.fortran
-        2: storage.type.fortran
-      pop: true
-    # generic end statement
-    - match: (?xi:^  \s*  (end)  \s*  $)
-      captures:
-        1: keyword.control.fortran
 
 
 
@@ -525,6 +532,10 @@ contexts:
       pop: true
 
 
+  m4macrostring:
+    - meta_scope: string.quoted.m4macro.fortran
+    - match: (\')
+      pop: true
   singlestring:
     - meta_scope: string.quoted.single.fortran
     - match: \'\'
