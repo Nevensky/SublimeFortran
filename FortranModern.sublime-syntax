@@ -101,7 +101,7 @@ scope: source.modern-fortran
 
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
-  type: '(?xi:integer|real|complex|logical|character|double\s+precision|type\(a\) )'
+  type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\(\s*[\w]+\s*\) )'
   modifier: '(?xi:elemental|pure|recursive)'
   attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save)'
 
@@ -282,9 +282,13 @@ contexts:
     # logical operators
     - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
       scope: keyword.operator.logical.fortran
+    # type member access
+    - match: (?xi:(\w+) (%) (\w+)  )
+      captures:
+        2: keyword.operator.member-access.fortran
 
     # types
-    - match: \b{{type}}\b
+    - match: "{{type}}"
       scope: storage.type.fortran
     # user defined types
     - match: \b(?i:(type\([\s\w]+\)))\b
