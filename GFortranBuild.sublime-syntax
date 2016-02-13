@@ -1,0 +1,27 @@
+%YAML 1.2
+---
+name: GFortran Build Results
+file_extensions: []
+scope: source.gfortran-build
+
+contexts:
+  main:
+    # Error
+    - match: (?xi:^ (Error:) \s (.*) )
+      captures:
+        1: keyword.error.gfortran-build
+        2: entity.name.function.gfortran-build
+    # Fatal error
+    - match: (?xi:^ (Fatal\sError:) \s (.*) )
+      captures:
+        1: keyword.error.gfortran-build
+        2: entity.name.function.gfortran-build
+    # File paths
+    - match: (?xi:^ [/]  .*  \.(f|for|fpp|f\d\d):\d+:\d+:)
+      scope: variable.parameter.path.gfortran-build
+    # compilation terminated.
+    - match: ^compilation terminated.
+      scope: invalid.compilation-terminated.gfortran-build
+    # Extraneous sublime output
+    - match: ^\[.*
+      scope: comment.sublime-output.gfortran-build
