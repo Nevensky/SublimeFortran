@@ -166,11 +166,19 @@ contexts:
         2: entity.name.function.program.fortran
       push: program
 
-    # module, type definition
-    - match: (?xi:^  \s*  (module|type)  \s+  (\w+)  \s*  $)
+    # type definition
+    - match: (?xi:^  \s*  (type)  (\s*::\s*|\s+)  (\w+)  \s*  $)
+      captures:
+        1: keyword.type.fortran
+        2: keyword.operator.fortran
+        3: entity.name.function.type.fortran
+
+    # module definition
+    - match: (?xi:^  \s*  (module)  \s+  (\w+)  \s*  $)
       captures:
         1: keyword.module.fortran
-        2: entity.name.type.fortran
+        2: entity.name.function.module.fortran
+
     # FIXME end module
     - match: (?xi:^  \s*  (end)  \s+  (module|type)  \s+  (\w+)?  \s*  $)
       captures:
