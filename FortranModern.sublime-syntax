@@ -186,6 +186,13 @@ contexts:
         2: keyword.module.fortran
         3: storage.module.fortran
 
+    # submodule definition
+    - match: (?xi:^  \s*  (submodule)  \s* \(({{ident}})\)  \s* ({{ident}})  \s*  $)
+      captures:
+        1: keyword.submodule.fortran
+        2: variable.other.module.fortran
+        3: entity.name.function.module.fortran
+
     # enum
     - match: (?xi:^  \s*  (enum(,\s*bind\(c\))?) \s* $)
       captures:
@@ -230,7 +237,7 @@ contexts:
     # - match: (?x:({{ident}})  \s*  (?=\()  )
     #   scope: meta.function-call.fortran
 
-    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|type|interface) ({{ident}})? )  )
+    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|submodule|type|interface) ({{ident}})? )  )
       captures:
         1: keyword.subroutine-end.fortran
         2: storage.type.fortran
