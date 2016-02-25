@@ -101,7 +101,7 @@ scope: source.modern-fortran
 
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
-  type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\(\s*[\w]+\s*\) )'
+  type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\s*\(\s*[\w]+\s*\) )'
   modifier: '(?xi:elemental|pure|recursive)'
   attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save|optional|contiguous)'
 
