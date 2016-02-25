@@ -537,6 +537,9 @@ contexts:
         1: keyword.call.fortran
         2: support.function.fortran
 
+    # Nullify statement
+    - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
+      scope: support.function.fortran
 
 
 
