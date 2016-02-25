@@ -424,6 +424,23 @@ contexts:
         1: keyword.scope.fortran
 
 
+    # coarray stuff
+    - match: (?xi:^  \s*  \b(sync) \s+ (all|images|memory)\b )
+      scope: support.function.coarrays.sync.fortran
+    - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) )
+      scope: constant.coarrays.fortran
+    # coarrays:
+    #   lock
+    #   unlock
+    #   codimension
+
+    # associate block
+    - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
+      captures:
+        1: keyword.associate.fortran
+    - match: (?xi:^ \s* (end\s*associate))
+      captures:
+        1: keyword.associate.fortran
 
 
 
