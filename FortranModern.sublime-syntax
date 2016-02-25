@@ -253,12 +253,9 @@ contexts:
       captures:
         1: keyword.control.fortran
         2: variable.parameter.fortran
-    # - match: \b(?i:(if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|pause|do|end\s*do|while|cycle))\b
-    #   scope: keyword.control.fortran
-
 
     # statements controling the flow of the program
-    - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|pause|do|end\s*do|while|cycle))\b
+    - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|error\s+stop|pause|do|end\s*do|while|cycle|exit))\b
       scope: keyword.control.fortran
 
     # programming units
