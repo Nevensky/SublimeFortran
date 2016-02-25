@@ -221,7 +221,7 @@ contexts:
       push: subroutine_parameter_list
 
     # subroutine definition without parameter list
-    - match: (?xi:^  \s*  ({{modifier}}\s+)?  \s*  (subroutine)\b  \s+  ({{ident}})  \s*  $)
+    - match: (?xi:^  \s*  ({{modifier}}\s+)?  \s*  (subroutine)\b  \s+  ({{ident}})  \s*  )
       captures:
         1: storage.type.fortran
         2: keyword.function.fortran
