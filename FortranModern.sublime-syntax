@@ -249,7 +249,7 @@ contexts:
     - match: (?xi:^  \s*  (where|elsewhere|forall|endwhere|endforall)  \b  )
       scope: keyword.control.fortran
     # do loop
-    - match: (?xi:^  \s*  (do)  \b  (\s+\d+\s+)?  \s*  )
+    - match: (?xi:^  \s*  (do\s+concurrent|do)  \b  (\s+\d+\s+)?  \s*  )
       captures:
         1: keyword.control.fortran
         2: variable.parameter.fortran
