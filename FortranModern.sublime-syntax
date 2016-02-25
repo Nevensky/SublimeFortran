@@ -190,7 +190,7 @@ contexts:
         1: keyword.enum.fortran
 
     # interface with name
-    - match: (?xi:(?<!end) (interface) \s+ ({{ident}})  \s*  $)
+    - match: (?xi:(?<!end) (interface) (\s+ {{ident}})?  \s*  $)
       captures:
         1: keyword.function.fortran
         2: entity.name.function.fortran
