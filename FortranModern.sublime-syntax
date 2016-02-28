@@ -604,6 +604,13 @@ contexts:
     - meta_content_scope: meta.subroutine-parameter-list.fortran
     - match: \w+ # variable name in the parameter list
       scope: variable.parameter.fortran
+    # match closing bracket plus result(...)
+    - match: (?xi:\) \s* (result)  \s*  \(   \s*  (\w+) \s* \))
+      captures:
+        1: keyword.function-result.fortran
+        2: variable.parameter.fortran
+      pop: true
+    # match closing bracket only
     - match: \)
       pop: true
   #     set: subroutines # close parameter list scope, push subroutines scope
