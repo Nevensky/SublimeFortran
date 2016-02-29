@@ -169,7 +169,7 @@ contexts:
     - match: ^\s*(?i:(program))\b\s+(\p{Alpha}\w*)\s*$
       captures:
         1: storage.type.program.fortran
-        2: entity.name.program.fortran
+        2: entity.name.function.program.fortran
       push: program
 
     # module, type definition
