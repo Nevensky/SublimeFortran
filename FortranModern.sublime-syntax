@@ -363,12 +363,7 @@ contexts:
         1: support.function.fortran
 
     # IO: print, write, rewrite, read
-    - match: (?xi:\b  (print|write|rewrite|read)  \s*  \(  )
-      captures:
-        1: support.function.fortran
-
-    # IO: print, write, rewrite, read
-    - match: (?xi:\b  (print|write|rewrite|read)  \s*  \(  )
+    - match: (?xi:\b  (print|write|rewrite|read)  \s*  (?= (\(|\*|\d+) )  )
       captures:
         1: support.function.fortran
 
