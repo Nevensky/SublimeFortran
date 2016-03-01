@@ -641,7 +641,10 @@ contexts:
 
   common:
     - meta_content_scope: meta.common-block.fortran
-    - match: $\n?
+    - match: ({{ident}})
+      scope: variable.parameter.common-block-name.fortran
+    # Don't end the block if the newline is preceded by an &
+    - match: (?<!&)\n
       pop: true
 
   blockdata:
