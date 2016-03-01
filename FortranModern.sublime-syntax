@@ -405,6 +405,14 @@ contexts:
         1: keyword.control.import.error.fortran
       push: preprocessor_errorwarning
 
+    # namelist /name/ variables
+    - match: (?xi:^  \s*  (namelist)  \s*  (/\w+/)  \s*  )
+      captures:
+        0: namelist.statement.fortran
+        1: keyword.namelist.fortran
+        2: storage.type.namelist-name.fortran
+      push: namelist
+
     # common block with name
     - match: (?xi:^  \s*  (common)  \s*  (/\w+/)  \s*  )
       captures:
@@ -622,6 +630,14 @@ contexts:
   #       1: keyword.subroutine-end.fortran
   #       2: storage.type.fortran
   #     pop: true
+
+  namelist:
+    - meta_content_scope: meta.namelist.fortran
+    - match: ({{ident}})
+      scope: variable.parameter.namelist.fortran
+    # Don't end the block if the newline is preceded by an &
+    - match: (?<!&)\n
+      pop: true
 
   common:
     - meta_content_scope: meta.common-block.fortran

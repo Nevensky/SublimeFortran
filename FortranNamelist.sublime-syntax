@@ -1,0 +1,71 @@
+%YAML 1.2
+---
+# Syntax highlighting for fortran namelist data
+name: Fortran Namelist
+file_extensions: [namelist]
+scope: source.fortran-namelist
+
+
+variables:
+  ident: '[A-Za-z_][A-Za-z_0-9]*'
+
+contexts:
+  main:
+    # comments
+    - match: \!
+      push: comment
+
+    # strings
+    - match: \'
+      push: singlestring
+    - match: (\")
+      push: doublestring
+
+    # A namelist section beginning with &
+    - match: (?xi:(\&) \s* ({{ident}}))
+      captures:
+        1: keyword.ampersand.fortran-namelist
+        2: storage.type.namelist-name.fortran
+
+    # Variable = something
+    - match: (?xi:({{ident}}) \s* (=) \s* )
+      captures:
+        1: variable.parameter.fortran-namelist
+        2: keyword.equals.fortran-namelist
+
+    # Closing /
+    - match: /
+      scope: keyword.slash.fortran-namelist
+
+    # boolean constants
+    - match: (?i:\.true\.|\.false\.|t|f)
+      scope: constant.language.fortran
+
+    # numeric literals (without an exponent)
+    - match: \b[0-9.]*\b
+      scope: constant.numeric.fortran
+
+    # floating point literals with an exponent
+    - match: (?xi:(?<!\w)  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
+      scope: constant.numeric.floating-point.fortran
+
+  # additional contexts
+
+  singlestring:
+    - meta_scope: string.quoted.single.fortran
+    - match: \\'
+      scope: constant.character.escape.apostrophe.fortran
+    - match: (\')
+      pop: true
+  doublestring:
+    - meta_scope: string.quoted.double.fortran
+    - match: \\"
+      scope: constant.character.escape.quote.fortran
+    - match: (\")
+      pop: true
+
+  comment:
+    - meta_scope: comment.line.fortran
+    - match: $\n?
+      pop: true
+
