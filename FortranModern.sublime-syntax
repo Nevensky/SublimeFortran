@@ -549,7 +549,24 @@ contexts:
     - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
       scope: support.function.fortran
 
+    # Fortran 2008: http://www.nag.co.uk/nagware/np/r60_doc/nag_f2008.html#AUTOTOC_6
+    # Mathematics
+    - match: (?x:\b  (?i:acosh|asinh|atanh|hypot|norm2|erf|erfc|erfc_scaled|gamma|log_gamma)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # Bit manipulation
+    - match: (?x:\b  (?i:bge|bgt|ble|blt|dshiftl|dshiftr|iall|iany|iparity|leadz|trailz|maskl|maskr|merge_bits|parity|popcnt|poppar)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+    # Other
+    - match: (?x:\b  (?i:execute_command_line|storage_size|is_contiguous)  \b  (?=\s*\()  )
+      scope: support.function.fortran
 
+    # ISO_FORTRAN_ENV
+    - match: (?x:\b  (?i:int8|int16|int32|int64|real32|real64|real128)  \b  )
+      scope: support.type.fortran
+    - match: (?x:\b  (?i:character_kinds|integer_kinds|logical_kinds|real_kinds)  \b  )
+      scope: support.type.fortran
+     
+     
 
 
 
