@@ -164,7 +164,6 @@ contexts:
       captures:
         1: storage.type.program.fortran
         2: entity.name.function.program.fortran
-      push: program
 
     # type definition
     - match: (?xi:^  \s*  (type)  (\s*::\s*|\s+)  (\w+)  \s*  $)
@@ -228,15 +227,13 @@ contexts:
         3: entity.name.function.fortran
       # push: subroutines
 
-    - match: (?xi:^  \s*  (end)  ( $ | \s*(function|subroutine|module|submodule|type|interface) ({{ident}})? )  )
+    # end with block type and possible identifier
+    - match: (?xi:^  \s*  (end)  \s+(function|subroutine|module|submodule|type|interface|program)? (\s+{{ident}})?   )
+      scope: meta.end-statement.fortran
       captures:
-        1: keyword.subroutine-end.fortran
+        1: keyword.control.end.fortran
         2: storage.type.fortran
-      pop: true
-    # generic end statement
-    - match: (?xi:^  \s*  (end)  \s*  $)
-      captures:
-        1: keyword.control.fortran
+        3: entity.name.function.fortran
 
 
 
@@ -653,15 +650,6 @@ contexts:
   comment:
     - meta_scope: comment.line.fortran
     - match: $\n?
-      pop: true
-
-  program:
-    - meta_content_scope: meta.subroutine.fortran
-    - include: main
-    - match: (?x:((?i:end))($|\s*(?i:program)(\s+{{ident}})?))
-      captures:
-        1: keyword.other.fortran
-        2: storage.type.fortran
       pop: true
 
   subroutine_parameter_list:
