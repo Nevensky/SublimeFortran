@@ -103,7 +103,7 @@ variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
   type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\s*\(\s*[\w]+\s*\) )'
   modifier: '(?xi:elemental|pure|impure|recursive|module)'
-  attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save|optional|contiguous)'
+  attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save|optional|contiguous|private|public|protected)'
 
 contexts:
   main:
