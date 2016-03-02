@@ -178,13 +178,6 @@ contexts:
         1: keyword.module.fortran
         2: entity.name.function.module.fortran
 
-    # FIXME end module
-    - match: (?xi:^  \s*  (end)  \s+  (module|type)  \s+  (\w+)?  \s*  $)
-      captures:
-        1: keyword.module.fortran
-        2: keyword.module.fortran
-        3: storage.module.fortran
-
     # submodule definition
     - match: (?xi:^  \s*  (submodule)  \s* \(({{ident}})\)  \s* ({{ident}})  \s*  $)
       captures:
@@ -228,7 +221,7 @@ contexts:
       # push: subroutines
 
     # end with block type and possible identifier
-    - match: (?xi:^  \s*  (end)  \s+(function|subroutine|module|submodule|type|interface|program)? (\s+{{ident}})?   )
+    - match: (?xi:^  \s*  (end)  \s+(function|subroutine|module|submodule|type|interface|program|type)? (\s+{{ident}})?   )
       scope: meta.end-statement.fortran
       captures:
         1: keyword.control.end.fortran
