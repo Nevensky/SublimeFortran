@@ -25,7 +25,7 @@ contexts:
     - match: (?xi:(\&) \s* ({{ident}}))
       captures:
         1: keyword.ampersand.fortran-namelist
-        2: storage.type.namelist-name.fortran
+        2: storage.type.namelist-name.fortran-namelist
 
     # Variable = something
     - match: (?xi:({{ident}}) \s* (=) \s* )
@@ -39,33 +39,33 @@ contexts:
 
     # boolean constants
     - match: (?i:\.true\.|\.false\.|t|f)
-      scope: constant.language.fortran
+      scope: constant.language.fortran-namelist
 
     # numeric literals (without an exponent)
     - match: \b[0-9.]*\b
-      scope: constant.numeric.fortran
+      scope: constant.numeric.fortran-namelist
 
     # floating point literals with an exponent
     - match: (?xi:(?<!\w)  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
-      scope: constant.numeric.floating-point.fortran
+      scope: constant.numeric.floating-point.fortran-namelist
 
   # additional contexts
 
   singlestring:
-    - meta_scope: string.quoted.single.fortran
+    - meta_scope: string.quoted.single.fortran-namelist
     - match: \\'
-      scope: constant.character.escape.apostrophe.fortran
+      scope: constant.character.escape.apostrophe.fortran-namelist
     - match: (\')
       pop: true
   doublestring:
-    - meta_scope: string.quoted.double.fortran
+    - meta_scope: string.quoted.double.fortran-namelist
     - match: \\"
-      scope: constant.character.escape.quote.fortran
+      scope: constant.character.escape.quote.fortran-namelist
     - match: (\")
       pop: true
 
   comment:
-    - meta_scope: comment.line.fortran
+    - meta_scope: comment.line.fortran-namelist
     - match: $\n?
       pop: true
 
