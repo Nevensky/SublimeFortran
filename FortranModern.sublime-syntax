@@ -254,8 +254,11 @@ contexts:
     - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|error\s+stop|pause|do|end\s*do|while|cycle|exit))\b
       scope: keyword.control.fortran
 
+    # contains
+    - match: (?xi:\b contains \b)
+      scope: keyword.other.contains.fortran
     # programming units
-    - match: \b(?i:(entry|return|contains|include))\b
+    - match: \b(?i:(entry|return|include))\b
       scope: keyword.control.programming-units.fortran
     # rename import operator/pointer assignment operator
     - match: =>
