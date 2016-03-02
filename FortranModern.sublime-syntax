@@ -204,7 +204,8 @@ contexts:
       # push: interface
 
     # function/subroutine definition with parameter list
-    - match: (?xi:({{modifier}}\s+)? ({{type}}\s+)?  (?<!end)  \s*  (function|subroutine)\b  \s+  ({{ident}})  \s*  (\(|&) )
+    - match: (?xi:^ \s* ((?:{{modifier}}\s+)*) ({{type}}\s+)?  (?<!end)  \b(function|subroutine)\b  \s+  ({{ident}})  \s*  (\(|&) )
+      scope: meta.subroutine-declaration.fortran
       captures:
         1: keyword.modifier.fortran
         2: storage.type.fortran
@@ -213,11 +214,13 @@ contexts:
       push: subroutine_parameter_list
 
     # function/subroutine definition without parameter list
-    - match: (?xi:^  \s*  ({{modifier}}\s+)?  \s*  (function|subroutine)\b  \s+  ({{ident}})  \s*  )
+    - match: (?xi:^ \s* ((?:{{modifier}}\s+)*) ({{type}}\s+)?  (?<!end)  \b(function|subroutine)\b  \s+  ({{ident}})  \s*  )
+      scope: meta.subroutine-declaration.fortran
       captures:
-        1: storage.type.fortran
-        2: keyword.function.fortran
-        3: entity.name.function.fortran
+        1: keyword.modifier.fortran
+        2: storage.type.fortran
+        3: keyword.function.fortran
+        4: entity.name.function.fortran
       # push: subroutines
 
     # end with block type and possible identifier
