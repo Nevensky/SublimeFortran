@@ -315,12 +315,6 @@ contexts:
       captures:
         1: keyword.dimension.fortran
 
-    # variable with asterisk as dimension
-    - match: (?xi:(\w+)  \( (\*) \))
-      captures:
-        1: variable.parameter.fortran
-        2: variable.parameter.fortran
-
     # continue label, possibly numbered
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
       captures:
