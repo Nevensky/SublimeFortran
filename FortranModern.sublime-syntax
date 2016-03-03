@@ -279,9 +279,8 @@ contexts:
     - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
       scope: keyword.operator.logical.fortran
     # type member access
-    - match: (?xi:(\w+) \s* (%) \s* (\w+)  )
-      captures:
-        2: keyword.operator.member-access.fortran
+    - match: \%
+      scope: keyword.operator.member-access.fortran
 
     # types
     - match: "{{type}}"
