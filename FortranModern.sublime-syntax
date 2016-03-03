@@ -162,7 +162,7 @@ contexts:
     # program definition
     - match: (?xi:^  \s*  (program)  \s+  ({{ident}})  \s*  $)
       captures:
-        1: storage.type.program.fortran
+        1: keyword.program-unit.fortran
         2: entity.name.function.program.fortran
 
     # type definition
@@ -175,7 +175,7 @@ contexts:
     # module definition
     - match: (?xi:^  \s*  (module)  \s+  (\w+)  \s*  $)
       captures:
-        1: keyword.module.fortran
+        1: keyword.program-unit.fortran
         2: entity.name.function.module.fortran
 
     # submodule definition
@@ -199,7 +199,7 @@ contexts:
     # interface with name
     - match: (?xi:(?<!end) (interface) \b \s* ({{ident}})?  \s*  $)
       captures:
-        1: keyword.function.fortran
+        1: keyword.program-unit.fortran
         2: entity.name.function.fortran
       # push: interface
 
@@ -209,7 +209,7 @@ contexts:
       captures:
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.function.fortran
+        3: keyword.program-unit.fortran
         4: entity.name.function.fortran
       push: subroutine_parameter_list
 
@@ -219,7 +219,7 @@ contexts:
       captures:
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.function.fortran
+        3: keyword.program-unit.fortran
         4: entity.name.function.fortran
       # push: subroutines
 
@@ -228,7 +228,7 @@ contexts:
       scope: meta.end-statement.fortran
       captures:
         1: keyword.control.end.fortran
-        2: storage.type.fortran
+        2: keyword.program-unit.fortran
         3: entity.name.function.fortran
 
 
