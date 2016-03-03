@@ -269,9 +269,6 @@ contexts:
     # C style comparison operators
     - match: (==|<|>|<=|>=)
       scope: keyword.operator.c-style.fortran
-    # variable assignment operator
-    - match: \s=\s
-      scope: keyword.operator.fortran
     # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
     - match: (?xi:(?<!\w)  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
       scope: constant.numeric.floating-point.fortran
