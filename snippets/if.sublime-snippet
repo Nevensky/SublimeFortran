@@ -1,0 +1,9 @@
+<snippet>
+    <tabTrigger>if</tabTrigger>
+    <scope>source.modern-fortran</scope>
+    <description>If Condition</description>
+    <content><![CDATA[
+if (${1:$SELECTION}) then
+	$0
+endif]]></content>
+</snippet>

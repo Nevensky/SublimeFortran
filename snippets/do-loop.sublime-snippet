@@ -1,0 +1,11 @@
+<snippet>
+    <tabTrigger>do</tabTrigger>
+    <scope>source.modern-fortran</scope>
+    <description>Do Loop</description>
+
+	<content><![CDATA[
+do ${1:i}=${2:1,n}
+	$0
+enddo
+]]></content>
+</snippet>

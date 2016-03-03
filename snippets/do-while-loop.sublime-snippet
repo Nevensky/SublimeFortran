@@ -1,0 +1,9 @@
+<snippet>
+    <tabTrigger>dowhile</tabTrigger>
+    <scope>source.modern-fortran</scope>
+    <description>Do While Loop</description>
+	<content><![CDATA[
+do while (${1:$SELECTION})
+	$0
+enddo]]></content>
+</snippet>

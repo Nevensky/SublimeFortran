@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[type :: ${1:T}
+    $0
+end type $1]]></content>
+    <tabTrigger>type</tabTrigger>
+    <scope>source.modern-fortran</scope>
+    <description>New Type</description>
+</snippet>
