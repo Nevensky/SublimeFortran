@@ -1,0 +1,10 @@
+<snippet>
+    <content><![CDATA[${1:real} function ${2:p}(${3:args}) result(${4:r})
+    implicit none
+    ${5:real} :: $3
+    $0
+function $2]]></content>
+    <tabTrigger>funcr</tabTrigger>
+    <scope>source.modern-fortran</scope>
+    <description>function with result()</description>
+</snippet>
