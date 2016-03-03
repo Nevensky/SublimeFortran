@@ -538,9 +538,9 @@ contexts:
 
     # ISO_FORTRAN_ENV
     - match: (?x:\b  (?i:int8|int16|int32|int64|real32|real64|real128)  \b  )
-      scope: support.type.fortran
+      scope: support.constant.fortran
     - match: (?x:\b  (?i:character_kinds|integer_kinds|logical_kinds|real_kinds)  \b  )
-      scope: support.type.fortran
+      scope: support.constant.fortran
 
     ##########################
     # IEEE Intrinsic Modules #
@@ -551,24 +551,24 @@ contexts:
       scope: support.type.fortran
     # IEEE_CLASS_TYPEs
     - match: (?xi:\b ieee_(signaling_nan|negative_normal|quiet_nan|positive_denormal|positive_inf|negative_denormal|negative_inf|positive_zero|positive_normal|negative_zero|other_value) \b )
-      scope: support.variable.fortran
+      scope: support.constant.fortran
     # IEEE_ROUND_TYPEs
     - match: (?xi:\b ieee_(nearest|to_zero|up|other|down) \b )
-      scope: support.variable.fortran
+      scope: support.constant.fortran
 
     # IEEE_EXCEPTIONS module
     - match: (?xi:\b ieee_(flag_type|status_type) \b)
       scope: support.type.fortran
     # IEEE_FLAG_TYPEs
     - match: (?xi:\b ieee_(invalid|divide_by_zero|overflow|inexact|underflow|usual|all) \b )
-      scope: support.variable.fortran
+      scope: support.constant.fortran
 
     # IEEE_FEATURES module
     - match: (?xi:\b ieee_(features_type|status_type) \b)
       scope: support.type.fortran
     # IEEE_FEATURES_TYPEs
     - match: (?xi:\b ieee_(datatype|inf|divide|nan|rounding|inexact_flag|sqrt|invalid_flag|denormal|underflow_flag|halting) \b )
-      scope: support.variable.fortran
+      scope: support.constant.fortran
 
     # IEEE Procedures
     - match: (?xi:\b ieee_(class|copy_sign) \b )
