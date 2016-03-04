@@ -270,7 +270,7 @@ contexts:
     - match: (==|<|>|<=|>=)
       scope: keyword.operator.c-style.fortran
     # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
-    - match: (?xi:(?<!\w)  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
+    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
       scope: constant.numeric.floating-point.fortran
     # arithmetic operators
     - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
