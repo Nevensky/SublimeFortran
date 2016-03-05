@@ -638,6 +638,19 @@ contexts:
 
   comment:
     - meta_scope: comment.line.fortran
+    # Match inline LaTeX
+    - match: \$
+      push: inline_latex
+    - match: $\n?
+      pop: true
+
+  inline_latex:
+    - meta_scope: meta.inline_latex.fortran
+    - meta_content_scope: markup.bold
+    - match: \\\w+
+      scope: markup.italic
+    - match: \$
+      pop: true
     - match: $\n?
       pop: true
 
