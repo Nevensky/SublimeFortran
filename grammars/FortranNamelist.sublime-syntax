@@ -30,7 +30,7 @@ contexts:
     # Variable = something
     - match: (?xi:({{ident}}) \s* (=) \s* )
       captures:
-        1: variable.parameter.fortran-namelist
+        1: entity.name.tag.fortran-namelist
         2: keyword.equals.fortran-namelist
 
     # Closing /
