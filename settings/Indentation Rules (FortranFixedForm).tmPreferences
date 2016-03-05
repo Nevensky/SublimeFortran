@@ -8,27 +8,26 @@
 	<dict>
 		<key>increaseIndentPattern</key>
 		<string>(?xi)
-	    ^ .* \{ [^}"']* $
-	|   ^ \s* (do|if|where): \s* $
-	|   ^ \s* @(public|private|protected) \s* $
+	    ^ \s* (do) \b
+	|   ^ .*  (then) \s*$
+	|   ^ \s* (else) \s*$
 		</string>
 
 		<key>decreaseIndentPattern</key>
+		<!-- At least 8 spaces required to decrease indent -->
 		<string>(?xi)
-	    ^ \s* end .* $
+	    ^ \s{8} \s* end .* $
 		</string>
 
-		<key>bracketIndentNextLinePattern</key>
-		<string>(?x)
-		^ \s* \b(if|while|else)\b [^;]* $
-		| ^ \s* \b(for)\b .* $
-		</string>
-
-		<key>unIndentedLinePattern</key>
-		<string>^\s*((/\*|.*\*/|//|#|template\b.*?&gt;(?!\(.*\))|@protocol|@interface(?!.*\{)|@implementation|@end).*)?$</string>
+		<!-- Disable further indent if already indented by  characters -->
+		<key>disableIndentNextLinePattern</key>
+		<string>^\s{20}</string>
+		
+		<!-- <key>unIndentedLinePattern</key> -->
 
 		<key>indentSquareBrackets</key>
 		<false/>
+
 
 	</dict>
 </dict>

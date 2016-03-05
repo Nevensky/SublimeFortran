@@ -8,7 +8,8 @@
 	<dict>
 		<key>increaseIndentPattern</key>
 		<string>(?xi)
-	    ^ \s* (program|subroutine|function|module|do|if|where|forall)  \b  .* $
+	    ^ [^!]* \bthen\b \s* (!.*)? $
+	|   ^ \s* (program|subroutine|function|module|do|where)  \b  .* $
 	|   ^ \s* (else\s*if|elsewhere) \b .* $
 		</string>
 
