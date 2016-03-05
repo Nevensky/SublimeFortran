@@ -307,12 +307,12 @@ contexts:
     - match: (?xi:\b  (dimension)  \s* \(  [^)]*  \)  )
       captures:
         0: meta.dimension.fortran
-        1: keyword.dimension.fortran
+        1: storage.modifier.fortran
 
     # dimension statement
     - match: (?xi:^  \s*  (dimension)  \b  )
       captures:
-        1: keyword.dimension.fortran
+        1: storage.modifier.fortran
 
     # continue label, possibly numbered
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
