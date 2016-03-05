@@ -2,7 +2,7 @@
     <content><![CDATA[program ${1:p}
 	implicit none
     $0
-program $1]]></content>
+end program $1]]></content>
     <tabTrigger>prog</tabTrigger>
     <scope>source.modern-fortran</scope>
     <description>program</description>

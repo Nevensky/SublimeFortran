@@ -3,7 +3,7 @@
     implicit none
     ${3:real} :: $2
     $0
-subroutine $1]]></content>
+end subroutine $1]]></content>
     <tabTrigger>sub</tabTrigger>
     <scope>source.modern-fortran</scope>
     <description>subroutine</description>
