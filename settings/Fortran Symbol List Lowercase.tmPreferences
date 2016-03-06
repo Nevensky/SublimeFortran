@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>scope</key>
+    <string>source.modern-fortran entity.name.function</string>
+    <key>settings</key>
+    <dict>
+        <!-- This doesn't work -->
+        <!-- 
+        <key>symbolTransformation</key>
+        <string>
+            s/(\w)/\L$1/g;
+        </string>
+        <key>symbolIndexTransformation</key>
+        <string>
+            s/(\w)/\L$1/g;
+        </string>
+         -->
+    </dict>
+</dict>
+</plist>
