@@ -247,11 +247,12 @@ contexts:
     # where/forall statement
     - match: (?xi:^  \s*  (where|elsewhere|forall|endwhere|endforall)  \b  )
       scope: keyword.control.fortran
-    # do loop
-    - match: (?xi:^  \s*  (do\s+concurrent|do)  \b  (\s+\d+\s+)?  \s*  )
+    # do loop (with optional label and number)
+    - match: (?xi:^  \s*  (?:(\w+):\s*)? (do\s+concurrent|do)  \b  (\s+\d+\s+)?  \s*  )
       captures:
-        1: keyword.control.fortran
-        2: variable.parameter.fortran
+        1: entity.name.tag.do-loop-label.fortran
+        2: keyword.control.fortran
+        3: variable.parameter.fortran
 
     # statements controling the flow of the program
     - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|error\s+stop|pause|do|end\s*do|while|cycle|exit))\b
