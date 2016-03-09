@@ -6,27 +6,44 @@
 	<key>scope</key><string>source.modern-fortran</string>
 	<key>settings</key>
 	<dict>
+		<!--
+			Multiline "if" statement can be identified by "then".
+			"where" and "forall" require recursive find of matching bracket.
+			Define a named regex group <re> which matches open
+			and closed bracket pairs using recursion.
+		-->
 		<key>increaseIndentPattern</key>
 		<string>(?xi)
 	    ^ [^!]* \bthen\b \s* (!.*)? $
-	|   ^ \s* (program|subroutine|function|module|do|where)  \b  .* $
-	|   ^ \s* (else\s*if|elsewhere) \b .* $
+	|   ^ \s* \w+: \s* \b do \b   .* $
+	|   ^ \s* (program|subroutine|function|module|do)  \b  .* $
+	|   ^ \s* (where|forall) \s* (?&lt;re&gt; \((?: (?&gt; [^()]+ ) | \g&lt;re&gt; )* \) )  \s* $
+	|   ^ \s* (else|else\s*if|elsewhere) \b .* $
+	|   ^ \s* (select\s+case|case) \b .* $
 		</string>
 
 		<key>decreaseIndentPattern</key>
 		<string>(?xi)
 	    ^ \s* (end)  \b  \s* $
-	|   ^ \s* end\s*(program|subroutine|function|module|do|if|where|forall)  \b  \s* $
+	|   ^ \s* end \s* (program|subroutine|function|module|do|if|where|forall|select)  \b  .* $
 	|   ^ \s* (else|else\s*if|else\s*where)  \b
+	|   ^ \s* (case) \b .* $
 		</string>
 
-<!-- 		<key>unIndentedLinePattern</key>
-		<string>(?xi)
-	    #.* \s* $
+		<!-- Ignore C preprocessor commands and comments which are 72 characters long. -->
+		<!-- Ignore comment lines for now, because they break indentation. -->
+		<key>unIndentedLinePattern</key>
+		<string>(?xi) 
+		^\s* \#\w+ .* $
+	|   ^\s* !.{71}$
+	|   ^\s* !.*$
 		</string>
- -->
-		<!-- Future possibilities -->
+
+		<!-- Indent after lines with line continuation character -->
 		<!-- <key>bracketIndentNextLinePattern</key> -->
+		<!-- <string>(?xi) ^ .* &amp; $</string> -->
+
+		<!-- Future possibilities -->
 		<!-- <key>indentSquareBrackets</key><false/> -->
 	</dict>
 </dict>
