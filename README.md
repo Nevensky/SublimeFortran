@@ -12,4 +12,10 @@ Features:
    and therefore currently requires a recent [beta version](http://www.sublimetext.com/3)
    of Sublime Text 3 (minimum build number 3084).
 
+ - Code snippets
+
+ - Indentation rules
+
+ - Linter based on `gfortran` (requires the package [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to work)
+
 Pull requests are welcome :)
