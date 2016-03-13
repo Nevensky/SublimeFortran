@@ -4,7 +4,7 @@ implicit none
 ${2:real} :: $3
 contains
     $0
-module $1]]></content>
+end module $1]]></content>
     <tabTrigger>mod</tabTrigger>
     <scope>source.modern-fortran</scope>
     <description>module</description>
