@@ -38,7 +38,7 @@ contexts:
       scope: keyword.slash.fortran-namelist
 
     # boolean constants
-    - match: (?i:\.true\.|\.false\.|t|f)
+    - match: (?i:\.true\.|\.false\.|\bt\b|\bf\b)
       scope: constant.language.fortran-namelist
 
     # numeric literals (without an exponent)
