@@ -320,7 +320,7 @@ contexts:
         2: keyword.continue.fortran
     # labeled statement
     - match: ^(    \d|   \d\d|  \d\d\d)
-      scope: variable.parameter.fortran
+      scope: entity.name.statement-label.fortran
     # goto statement
     - match: (?xi:\b  (go\s*to)  \s+  (\d+))
       captures:
