@@ -337,8 +337,39 @@ contexts:
       captures:
         1: support.function.fortran
 
+    # IO: print with format string
+    - match: (?xi:\b  (print)  \s*  ( \"\( )  )
+      captures:
+        1: support.function.fortran
+        2: punctuation.start-of-format-string.fortran meta.format-string.fortran
+      push: formatstring
+    # IO: print with format string variable or star or number
+    - match: (?xi:\b  (print)  \s*  (\*)? (\d+)? (\w+)? )
+      captures:
+        1: support.function.fortran
+        2: keyword.default-format.fortran
+        3: variable.format-number.fortran
+        4: variable.format-string.fortran
+    # IO: write with (unit number|string variable) and format string
+    - match: (?xi:\b  (write)  \s*  (\() (\d+|{{ident}}) \s* , \s*      ( \"\( )  )
+      captures:
+        1: support.function.fortran
+        2: punctuation.parenthesis.fortran
+        3: variable.write-destination.fortran
+        4: punctuation.start-of-format-string.fortran meta.format-string.fortran
+      push: formatstring
+    # IO: write with (unit number|string variable) and format string variable or star or number
+    - match: (?xi:\b  (write)  \s*  (\() (\*|\d+|{{ident}}) \s* , \s*      (\*)? (\d+)? (\w+)? )
+      captures:
+        1: support.function.fortran
+        2: punctuation.parenthesis.fortran
+        3: variable.write-destination.fortran
+        4: keyword.default-format.fortran
+        5: variable.format-number.fortran
+        6: variable.format-string.fortran
+    
     # IO: print, write, rewrite, read
-    - match: (?xi:\b  (print|write|rewrite|read)  \s*  (?= (\(|\*|\d+) )  )
+    - match: (?xi:\b  (print|write|rewrite|read)  \s*  (?= ( \( | \* | \d+ ) )  )
       captures:
         1: support.function.fortran
 
