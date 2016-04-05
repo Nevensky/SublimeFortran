@@ -273,12 +273,6 @@ contexts:
     # C style comparison operators
     - match: (==|<|>|<=|>=)
       scope: keyword.operator.c-style.fortran
-    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
-    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
-      scope: constant.numeric.floating-point.fortran
-    # arithmetic operators
-    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
-      scope: keyword.operator.fortran
     # logical operators
     - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
       scope: keyword.operator.logical.fortran
@@ -446,9 +440,9 @@ contexts:
     - match: (?i:\.true\.|\.false\.)
       scope: constant.language.fortran
 
-    # numeric literals (without an exponent)
-    - match: \b[0-9.]*\b
-      scope: constant.numeric.fortran
+    # # numeric literals (without an exponent)
+    # - match: \b[0-9.]*\b
+    #   scope: constant.numeric.fortran
 
     # Intrinsic functions in Fortran 90
     # https://www.nsc.liu.se/~boein/f77to90/a5.html
@@ -597,6 +591,12 @@ contexts:
     # - match: (?x:({{ident}})  \s*  (?=\()  )
     #   scope: meta.function-call.fortran
 
+    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
+    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
+      scope: constant.numeric.floating-point.fortran
+    # arithmetic operators (must come after floating point literals)
+    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
+      scope: keyword.operator.fortran
 
 
 
