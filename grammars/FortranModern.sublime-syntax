@@ -408,11 +408,13 @@ contexts:
       push: preprocessor_errorwarning
 
     # namelist /name/ variables
-    - match: (?xi:^  \s*  (namelist)  \s*  (/\w+/)  \s*  )
+    - match: (?xi:^  \s*  (namelist)  \s*  (/)(\w+)(/)  \s*  )
       captures:
         0: namelist.statement.fortran
         1: keyword.namelist.fortran
-        2: storage.type.namelist-name.fortran
+        2: punctuation.namelist-slash.fortran
+        3: storage.type.namelist-name.fortran
+        4: punctuation.namelist-slash.fortran
       push: namelist
 
     # common block with name
@@ -722,6 +724,8 @@ contexts:
     - match: ({{ident}})
       scope: variable.parameter.namelist.fortran
     # Don't end the block if the newline is preceded by an &
+    - match: \!
+      push: comment
     - match: (?<!&)\n
       pop: true
 
