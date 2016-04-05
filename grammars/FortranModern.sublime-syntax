@@ -104,6 +104,9 @@ variables:
   type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\s*\(\s*[\w]+\s*\) )'
   modifier: '(?xi:elemental|pure|impure|recursive|module)'
   attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save|optional|contiguous|private|public|protected)'
+  # linecont: '(?x:\s* & \s* (!.*)? $ \n?)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
+  formatdescr: '(?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)?  )'
+  escapeseq: '(?i:\\[nrtbfv0''"x\\])'
 
 contexts:
   main:
@@ -351,12 +354,13 @@ contexts:
         1: support.function.fortran
 
     # IO: format statement
-    - match: (?xi:^  \s*  (\d+)  \s+  (format)  \(  )
+    - match: (?xi:^  \s*  (\d+)  \s+  (format)  \s*  (\()  )
       captures:
         0: format.statement.fortran
         1: entity.name.statement-label.fortran
         2: keyword.format.fortran
-      push: formatstring
+        3: punctuation.parenthesis.fortran
+      push: format_statement_inside_parens
 
     # allocate, deallocate
     - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
@@ -627,13 +631,17 @@ contexts:
     - meta_scope: string.quoted.single.fortran
     - match: \'\'
       scope: constant.character.escape.apostrophe.fortran
-    - match: (\')
+    - match: '{{escapeseq}}'
+      scope: constant.character.escape.backslash.fortran
+    - match: \'
       pop: true
   doublestring:
     - meta_scope: string.quoted.double.fortran
     - match: \"\"
       scope: constant.character.escape.quote.fortran
-    - match: (\")
+    - match: '{{escapeseq}}'
+      scope: constant.character.escape.backslash.fortran
+    - match: \"
       pop: true
 
 
@@ -699,15 +707,30 @@ contexts:
     - match: \b(?i:end)\b
       pop: true
 
+  # Stuff inside the parenthesis of format statements: format (....)
+  format_statement_inside_parens:
+    - meta_content_scope: meta.format-parenthesis.fortran
+    - match: \'
+      push: singlestring
+    - match: (\")
+      push: doublestring
+    - match: '{{formatdescr}}'
+      scope: constant.numeric.format-descriptor.fortran
+    - match: \)
+      scope: punctuation.parenthesis.fortran
+      pop: true
+
+  # Stuff inside the parenthesis of format strings: print "(.....)"
   formatstring:
     - meta_content_scope: meta.format-string.fortran
     - match: \'
       push: singlestring
     - match: (\")
       push: doublestring
-    - match: (?xi:(\d+)?  (pe|[aeigfx])  (\d+)?  \.?  (\d+)?  )
-      scope: constant.numeric.fortran   # whole thing
-    - match: \)
+    - match: '{{formatdescr}}'
+      scope: constant.numeric.format-descriptor.fortran
+    - match: \)\"
+      scope: punctuation.end-of-format-string.fortran meta.format-string.fortran
       pop: true
 
   # variabledeclaration:
