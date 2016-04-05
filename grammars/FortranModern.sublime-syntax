@@ -252,7 +252,7 @@ contexts:
       captures:
         1: entity.name.tag.do-loop-label.fortran
         2: keyword.control.fortran
-        3: variable.parameter.fortran
+        3: entity.name.statement-label.fortran
 
     # statements controling the flow of the program
     - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|error\s+stop|pause|do|end\s*do|while|cycle|exit))\b
@@ -319,7 +319,7 @@ contexts:
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
       captures:
         0: meta.continue-label.fortran
-        1: variable.parameter.fortran
+        1: entity.name.statement-label.fortran
         2: keyword.continue.fortran
     # labeled statement
     - match: ^(    \d|   \d\d|  \d\d\d)
@@ -328,7 +328,7 @@ contexts:
     - match: (?xi:\b  (go\s*to)  \s+  (\d+))
       captures:
         1: keyword.goto.fortran
-        2: variable.parameter.fortran
+        2: entity.name.statement-label.fortran
 
 
     # data type attributes
@@ -354,7 +354,7 @@ contexts:
     - match: (?xi:^  \s*  (\d+)  \s+  (format)  \(  )
       captures:
         0: format.statement.fortran
-        1: constant.numeric.fortran
+        1: entity.name.statement-label.fortran
         2: keyword.format.fortran
       push: formatstring
 
