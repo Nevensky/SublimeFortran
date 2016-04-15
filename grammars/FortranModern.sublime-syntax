@@ -101,12 +101,53 @@ scope: source.modern-fortran
 
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
-  type: '(?xi:\binteger\b|\breal\b|\bcomplex\b|\blogical\b|\bcharacter\b|\bdouble\s+precision\b|\btype\s*\(\s*[\w]+\s*\) )'
+  type: |
+    (?xi)
+    (?:
+        \b integer            \b
+      | \b real               \b
+      | \b complex            \b
+      | \b logical            \b
+      | \b character          \b
+      | \b double\s+precision \b
+      | \b type \s* \(
+                        \s* [\w]+ \s*
+                    \)
+    )
   modifier: '(?xi:elemental|pure|impure|recursive|module)'
-  attribute: '(?xi:allocatable|pointer|target|equivalence|parameter|external|intrinsic|save|optional|contiguous|private|public|protected)'
+  attribute: |
+    (?xi)
+    (?:
+        allocatable
+      | pointer
+      | target
+      | equivalence
+      | parameter
+      | external
+      | intrinsic
+      | save
+      | optional
+      | contiguous
+      | private
+      | public
+      | protected
+    )
   # linecont: '(?x:\s* & \s* (!.*)? $ \n?)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
-  formatdescr: '(?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)?  )'
-  escapeseq: '(?i:\\[nrtbfv0''"x\\])'
+  formatdescr: |
+    (?xi)
+    (?:
+      (\d+)?
+      (/|pe|[aeigfxp])
+      (\d+)?
+      \.?
+      (\d+)?
+    )
+  escapeseq: |
+    (?xi)
+    (?:
+      \\
+      [nrtbfv0''"x\\]
+    )
 
 contexts:
   main:
@@ -140,7 +181,13 @@ contexts:
       push: doublestring
 
     # use statements etc
-    - match: (?xi:^  \s*  (use)  \s+  (\w+)  ( (,)  \s*  (only)  \s*  (:) )?  )
+    - match: |
+        (?xi)
+        (?:^
+          \s* (use)
+          \s+ (\w+)
+          ( (,) \s* (only) \s* (:) )?
+        )
       captures:
         0: use.statement.fortran
         1: keyword.use.fortran
@@ -149,7 +196,13 @@ contexts:
         5: keyword.only.fortran
 
     # implicit statement
-    - match: (?xi:(implicit)  \s+  (none|.*)  )
+    - match: |
+        (?xi)
+        (?:
+          (implicit)
+          \s+
+          (none|.*)
+        )
       captures:
         0: implicit.statement.fortran
         1: keyword.implicit.fortran
@@ -163,36 +216,75 @@ contexts:
 
 
     # program definition
-    - match: (?xi:^  \s*  (program)  \s+  ({{ident}})  \s*  $)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (program)
+          \s+ ({{ident}})
+          \s*
+          $
+        )
       captures:
         1: keyword.program-unit.fortran
         2: entity.name.function.program.fortran
 
     # type definition
-    - match: (?xi:^  \s*  (type)  (\s*::\s*|\s+)  (\w+)  \s*  $)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (type)
+          (\s*::\s*|\s+)
+          (\w+)
+          \s*
+          $
+        )
       captures:
         1: keyword.type.fortran
         2: keyword.operator.fortran
         3: entity.name.function.type.fortran
 
     # module definition
-    - match: (?xi:^  \s*  (module)  \s+  (\w+)  \s*  $)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (module)
+          \s+  (\w+)
+          \s*
+          $
+        )
       captures:
         1: keyword.program-unit.fortran
         2: entity.name.function.module.fortran
 
     # submodule definition
-    - match: (?xi:^  \s*  (submodule)  \s* \(({{ident}})\)  \s* ({{ident}})  \s*  $)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (submodule)
+          \s* \( ({{ident}}) \)
+          \s* ({{ident}})
+          \s*
+          $
+        )
       captures:
         1: keyword.submodule.fortran
         2: variable.other.module.fortran
         3: entity.name.function.module.fortran
 
     # enum
-    - match: (?xi:^  \s*  (enum(,\s*bind\(c\))?) \s* $)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (
+            enum
+            (,\s*bind\(c\))?)
+          \s*
+          $
+        )
       captures:
         1: keyword.enum.fortran
-    - match: (?xi:\benumerator\b)
+
+    - match: (?xi:\b enumerator \b)
       scope: keyword.enumerator.fortran
     # end enum
     - match: (?xi:^  \s*  (endenum) \b)
@@ -200,14 +292,32 @@ contexts:
         1: keyword.enum.fortran
 
     # interface with name
-    - match: (?xi:(?<!end) (interface) \b \s* ({{ident}})?  \s*  $)
+    - match: |
+        (?xi)
+        (?:
+          (?<!end)
+          (interface) \b
+          \s* ({{ident}})?
+          \s*
+          $
+        )
       captures:
         1: keyword.program-unit.fortran
         2: entity.name.function.fortran
       # push: interface
 
     # function/subroutine definition with parameter list
-    - match: (?xi:^ \s* ((?:{{modifier}}\s+)*) ({{type}}\s+)?  (?<!end)  \b(function|subroutine)\b  \s+  ({{ident}})  \s*  (\(|&) )
+    - match: |
+        (?xi)
+        (?:^
+          \s*
+          ((?:{{modifier}}\s+)*)
+          ({{type}}\s+)?
+          (?<!end)
+          \b (function|subroutine) \b
+          \s+ ({{ident}})
+          \s* (\(|&)
+        )
       scope: meta.subroutine-declaration.fortran
       captures:
         1: keyword.modifier.fortran
@@ -217,7 +327,18 @@ contexts:
       push: subroutine_parameter_list
 
     # function/subroutine definition without parameter list
-    - match: (?xi:^ \s* ((?:{{modifier}}\s+)*) ({{type}}\s+)?  (?<!end)  \b(function|subroutine)\b  \s+  ({{ident}})  \s*  )
+    - match: |
+        (?xi)
+        (?:^
+          \s*
+          ((?:{{modifier}}\s+)*)
+          ({{type}}\s+)?
+          (?<!end)
+          \b (function|subroutine) \b
+          \s+
+          ({{ident}})
+          \s*
+        )
       scope: meta.subroutine-declaration.fortran
       captures:
         1: keyword.modifier.fortran
@@ -227,7 +348,13 @@ contexts:
       # push: subroutines
 
     # end with block type and possible identifier
-    - match: (?xi:^  \s*  (end)  \s+(function|subroutine|module|submodule|type|interface|program|type)? (\s+{{ident}})?   )
+    - match: |
+        (?xi)
+        (?:^
+          \s* (end) \b
+          ( \s+ (?:function|subroutine|module|submodule|type|interface|program|type) )?
+          ( \s+ {{ident}} )?
+        )
       scope: meta.end-statement.fortran
       captures:
         1: keyword.control.end.fortran
@@ -239,26 +366,72 @@ contexts:
 
 
     # if statement
-    - match: (?xi:^  \s*  (if|else\s*if|elif|endif)  \b  )
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (if|else\s*if|elif|endif)  \b  
+        )
       scope: keyword.control.fortran
     # select case statement
-    - match: (?xi:^  \s*  (select\s+case)  \b  )
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (select\s+case)  \b  
+        )
       scope: keyword.control.fortran
-    - match: (?xi:^  \s*  (case)  .*  (:)  \b  )
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (case)  .*  (:)  \b  
+        )
       captures:
         1: keyword.control.fortran
     # where/forall statement
-    - match: (?xi:^  \s*  (where|elsewhere|forall|endwhere|endforall)  \b  )
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (where|elsewhere|forall|endwhere|endforall)  \b  
+        )
       scope: keyword.control.fortran
     # do loop (with optional label and number)
-    - match: (?xi:^  \s*  (?:(\w+):\s*)? (do\s+concurrent|do)  \b  (\s+\d+\s+)?  \s*  )
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (?:(\w+):\s*)? (do \s+ concurrent|do) \b
+          (\s+\d+\s+)?
+          \s*
+        )
       captures:
         1: entity.name.tag.do-loop-label.fortran
         2: keyword.control.fortran
         3: entity.name.statement-label.fortran
 
     # statements controling the flow of the program
-    - match: \b(?i:(assign|to|if|then|else|elseif|elif|select\s*case|case|end\s*select|end\s*if|continue|stop|error\s+stop|pause|do|end\s*do|while|cycle|exit))\b
+    - match: |
+        (?xi)
+        (?:
+          \b( assign
+            | to
+            | if
+            | then
+            | else
+            | elseif
+            | elif
+            | case
+            | continue
+            | stop
+            | pause
+            | do
+            | while
+            | cycle
+            | exit
+            | select \s* case
+            | error \s+ stop
+            | end \s* select
+            | end \s* if
+            | end \s* do
+            ) \b
+        )
       scope: keyword.control.fortran
 
     # contains
