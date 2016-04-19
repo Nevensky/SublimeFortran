@@ -169,11 +169,25 @@ contexts:
 
 
 
-    # M4 macro quoted strings
+    # M4 macro quoted strings, comments, variables and macro definitions
     - match: \`
       push: m4macrostring
-    - match: (^\s*dnl\b)
+    - match: (?x:\b dnl \b )
       push: comment
+    - match: \$\d+
+      scope: variable.parameter.m4.fortran
+    - match: |
+        (?x)
+        (?:
+          \b
+          (define)
+          \(
+          \s*
+          `(\w+)'
+        )
+      captures:
+        1: keyword.m4.define.fortran
+        2: entity.name.function.m4.fortran
     # strings
     - match: \'
       push: singlestring
