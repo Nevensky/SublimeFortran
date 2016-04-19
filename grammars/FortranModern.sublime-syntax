@@ -4,101 +4,6 @@ name: Fortran (Modern)
 file_extensions: [f90, F90, f95, F95, f03, F03, f08, F08]
 scope: source.modern-fortran
 
-# TO DO:
-# control flow:
-#   forall
-#   do concurrent
-#   while
-#   return
-#   stop
-#   then
-#   select
-#   case
-#   cycle
-#   exit
-#   error stop
-# program units:
-#   data
-#   external
-#   program
-#   function (result)?
-#   subroutine
-#   interface
-#   module
-#   submodule
-#   contains
-# misc program scopes:
-#   associate
-# variable attributes:
-#   save
-#   implicit
-#   dimension
-#   parameter
-#   allocatable
-#   intent
-#   pointer
-#   target
-#   contiguous
-# subroutine attributes:
-#   recursive
-#   pure
-#   elemental
-# import:
-#   import
-#   include
-#   use, only
-# pointer commands:
-#   nullify
-# special types:
-#   procedure
-#   enum
-# derived data types:
-#   type
-#   sequence
-#   abstract
-#   extends
-#   % (member access)
-# procedure attributes:
-#   non_overridable
-# coarrays:
-#   sync all
-#   sync images
-#   sync memory
-#   lock
-#   unlock
-#   codimension
-
-
-# other:
-#   assign
-#   backspace
-#   block data
-#   endfile
-#   entry
-#   equivalence
-#   intrinsic
-#   namelist
-#   operator
-#   optional
-
-#   asynchronous
-#   bind
-#   class
-#   deferred
-#   end *enum
-#   enumerator
-#   final
-#   generic
-#   nopass
-#   pass
-#   value
-#   volatile
-#   block
-#   critical
-
-
-
-
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
   type: |
@@ -644,10 +549,6 @@ contexts:
       scope: support.function.coarrays.sync.fortran
     - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) )
       scope: constant.coarrays.fortran
-    # coarrays:
-    #   lock
-    #   unlock
-    #   codimension
 
     # associate block
     - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
