@@ -23,8 +23,8 @@ contexts:
     - match: \t
       scope: invalid.illegal.tab.fortran
     # lines over 72 characters are illegal
-    - match: (?xi:(?<=^ \s [^!]{71}) .* )
-      scope: invalid.illegal.tab.fortran
+    - match: (?xi:(?<=^ \s [^!]{71}) \s* [^!]* )
+      scope: invalid.illegal.line-too-long.fortran
 
 
 
