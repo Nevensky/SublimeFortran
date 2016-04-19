@@ -188,6 +188,11 @@ contexts:
       captures:
         1: keyword.m4.define.fortran
         2: entity.name.function.m4.fortran
+
+    # IO: other format string
+    - match: \"\(
+      scope: punctuation.start-of-format-string.fortran meta.format-string.fortran
+      push: formatstring
     # strings
     - match: \'
       push: singlestring
