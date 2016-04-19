@@ -587,16 +587,15 @@ contexts:
 
 
     # preprocessor logic
-    - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|ifndef|else|endif)  \b  .*  $)
-      scope: keyword.control.fortran
+    - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|elif|ifndef|else|endif)  \b  .*  $)
+      scope: keyword.control.preprocessor.fortran
     # preprocessor include
     - match: (?xi:^  \s*  \#  \s*  (include|import)  \b  )
-      scope: keyword.control.import.include.fortran
+      scope: keyword.control.preprocessor.fortran
       push: preprocessor_include
     # preprocessor warning
     - match: (?xi:^  \s*  \#  \s*  (error|warning)  \b  )
-      captures:
-        1: keyword.control.import.error.fortran
+      scope: keyword.control.preprocessor.fortran
       push: preprocessor_errorwarning
 
     # namelist /name/ variables
