@@ -54,26 +54,62 @@ variables:
       [nrtbfv0''"x\\]
     )
 
+
+
+
+
+
+
+
+
+
+
+
+
 contexts:
   main:
-    # Try to keep all the modern/punchcard differences at the top here
+    - include: comments
+    - include: illegal
+    - include: m4-macros
+    - include: strings
+    - include: use-statement
+    - include: implicit-statement
+    - include: openmp
+    - include: enumerator
+    - include: program-units
+    - include: flow-control
+    - include: misc-keywords
+    - include: user-defined-types
+    - include: labelled-statements
+    - include: data-type-attributes
+    - include: io
+    - include: allocation
+    - include: preprocessor
+    - include: namelist
+    - include: common-block
+    - include: data-statement
+    - include: block-data-statement
+    - include: public-private-protected
+    - include: coarrays
+    - include: associate-block
+    - include: ieee-intrinsics
+    - include: nullify-statement
+    - include: fortran-2008
+    - include: ieee-intrinsic-modules
+    - include: generic-subroutine-call
+
+
+
+  comments:
     # comments
     - match: \!
       push: comment
+  illegal:
     # tabs are illegal
     - match: \t
       scope: invalid.illegal.tab.fortran
 
-
-
-
-
-
-
-
-
-
-
+  m4-macros:
     # M4 macro quoted strings, comments, variables and macro definitions
     - match: \`
       push: m4macrostring
@@ -94,6 +130,7 @@ contexts:
         1: keyword.m4.define.fortran
         2: entity.name.function.m4.fortran
 
+  strings:
     # IO: other format string
     - match: \"\(
       scope: punctuation.start-of-format-string.fortran meta.format-string.fortran
@@ -104,6 +141,7 @@ contexts:
     - match: (\")
       push: doublestring
 
+  use-statement:
     # use statements etc
     - match: |
         (?xi)
@@ -119,6 +157,7 @@ contexts:
         3: optional.group.use.statement.fortran
         5: keyword.only.fortran
 
+  implicit-statement:
     # implicit statement
     - match: |
         (?xi)
@@ -132,13 +171,34 @@ contexts:
         1: keyword.implicit.fortran
         2: meta.implicit-specification.fortran
 
+
+  openmp:
     # OpenMP
     - match: (?x:^  \s*  ([!]\$)  .*  $)
       scope: support.other.openmp.fortran
 
+  enumerator:
+    # enum
+    - match: |
+        (?xi)
+        (?:^
+          \s* (
+            enum
+            (,\s*bind\(c\))?)
+          \s*
+          $
+        )
+      captures:
+        1: keyword.enum.fortran
 
+    - match: (?xi:\b enumerator \b)
+      scope: keyword.enumerator.fortran
+    # end enum
+    - match: (?xi:^  \s*  (endenum) \b)
+      captures:
+        1: keyword.enum.fortran
 
-
+  program-units:
     # program definition
     - match: |
         (?xi)
@@ -194,26 +254,6 @@ contexts:
         1: keyword.submodule.fortran
         2: variable.other.module.fortran
         3: entity.name.function.module.fortran
-
-    # enum
-    - match: |
-        (?xi)
-        (?:^
-          \s* (
-            enum
-            (,\s*bind\(c\))?)
-          \s*
-          $
-        )
-      captures:
-        1: keyword.enum.fortran
-
-    - match: (?xi:\b enumerator \b)
-      scope: keyword.enumerator.fortran
-    # end enum
-    - match: (?xi:^  \s*  (endenum) \b)
-      captures:
-        1: keyword.enum.fortran
 
     # interface with name
     - match: |
@@ -288,7 +328,7 @@ contexts:
 
 
 
-
+  flow-control:
     # if statement
     - match: |
         (?xi)
@@ -358,57 +398,39 @@ contexts:
         )
       scope: keyword.control.fortran
 
+
+
+
+
+
+
+
+
+
+
+
+  misc-keywords:
     # contains
     - match: (?xi:\b contains \b)
       scope: keyword.other.contains.fortran
     # programming units
     - match: \b(?i:(entry|return|include))\b
       scope: keyword.control.programming-units.fortran
-    # rename import operator/pointer assignment operator
-    - match: =>
-      scope: keyword.operator.fortran
-    # C style comparison operators
-    - match: (==|<|>|<=|>=)
-      scope: keyword.operator.c-style.fortran
-    # logical operators
-    - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
-      scope: keyword.operator.logical.fortran
-    # type member access
-    - match: \%
-      scope: keyword.operator.member-access.fortran
+    # other
+    - match: \b(?i:(operator|assignment))\b
+      scope: storage.type.fortran
 
+  user-defined-types:
     # types
     - match: "{{type}}"
       scope: storage.type.fortran
     # user defined types
     - match: \b(?i:(type\([\s\w]+\)))\b
       scope: storage.type.fortran
-    # other
-    - match: \b(?i:(operator|assignment))\b
-      scope: storage.type.fortran
-    # # variable declaration
-    # - match: ^\s*(?i:(integer|real|complex|logical|character|double\s+precision))\b
-    #   scope: storage.type.fortran
-    #   push: variabledeclaration
 
-    # variable intent
-    - match: (?xi:\b  (intent)  \s* \(  \s*  (in|out|inout)  \s*  \)  )
-      captures:
-        0: meta.intent.fortran
-        1: keyword.intent.fortran
-        2: constant.language.fortran
 
-    # variable dimension
-    - match: (?xi:\b  (dimension)  \s* \(  [^)]*  \)  )
-      captures:
-        0: meta.dimension.fortran
-        1: storage.modifier.fortran
 
-    # dimension statement
-    - match: (?xi:^  \s*  (dimension)  \b  )
-      captures:
-        1: storage.modifier.fortran
-
+  labelled-statements:
     # continue label, possibly numbered
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
       captures:
@@ -425,10 +447,27 @@ contexts:
         2: entity.name.statement-label.fortran
 
 
+  data-type-attributes:
     # data type attributes
     - match: \b(?i:{{attribute}})\b
       scope: storage.modifier.fortran
+    # dimension statement
+    - match: (?xi:^  \s*  (dimension)  \b  )
+      captures:
+        1: storage.modifier.fortran
+    # variable dimension
+    - match: (?xi:\b  (dimension)  \s* \(  [^)]*  \)  )
+      captures:
+        0: meta.dimension.fortran
+        1: storage.modifier.fortran
+    # variable intent
+    - match: (?xi:\b  (intent)  \s* \(  \s*  (in|out|inout)  \s*  \)  )
+      captures:
+        0: meta.intent.fortran
+        1: keyword.intent.fortran
+        2: constant.language.fortran
 
+  io:
     # IO: open, close
     - match: (?xi:\b  (close|open)  \s*  \(  )
       captures:
@@ -484,13 +523,18 @@ contexts:
         3: punctuation.parenthesis.fortran
       push: format_statement_inside_parens
 
+
+
+
+
+  allocation:
     # allocate, deallocate
     - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
       captures:
         1: support.function.fortran
         2: variable.other.fortran
 
-
+  preprocessor:
     # preprocessor logic
     - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|elif|ifndef|else|endif)  \b  .*  $)
       scope: keyword.control.preprocessor.fortran
@@ -503,6 +547,7 @@ contexts:
       scope: keyword.control.preprocessor.fortran
       push: preprocessor_errorwarning
 
+  namelist:
     # namelist /name/ variables
     - match: (?xi:^  \s*  (namelist)  \s*  (/)(\w+)(/)  \s*  )
       captures:
@@ -511,26 +556,29 @@ contexts:
         2: punctuation.namelist-slash.fortran
         3: storage.type.namelist-name.fortran
         4: punctuation.namelist-slash.fortran
-      push: namelist
+      push: namelist-meta
 
+  common-block:
     # common block with name
     - match: (?xi:^  \s*  (common)  \s*  (/\w+/)  \s*  )
       captures:
         0: common.statement.fortran
         1: keyword.common.fortran
         2: storage.type.common-block-name.fortran
-      push: common
+      push: common-block-meta
     # common block with no name given
     - match: (?xi:^  \s*  (common)  \s+  )
       captures:
         0: common.statement.fortran
         1: keyword.common.fortran
-      push: common
+      push: common-block-meta
+  data-statement:
     # data statement
     - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
       captures:
         1: keyword.data.fortran
         2: storage.data.fortran
+  block-data-statement:
     # block data statement
     - match: (?xi:^  \s*  (block\s*data)  \s+  (\w+)  )
       captures:
@@ -538,18 +586,34 @@ contexts:
         2: storage.block-data.fortran
       push: blockdata
 
+  public-private-protected:
     # public/private/protected keywords
     - match: (?xi:^  \s*  \b(public|private|protected) \b )
       captures:
         1: keyword.scope.fortran
 
 
+  coarrays:
     # coarray stuff
     - match: (?xi:^  \s*  \b(sync) \s+ (all|images|memory)\b )
       scope: support.function.coarrays.sync.fortran
     - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) )
       scope: constant.coarrays.fortran
 
+  generic-subroutine-call:
+    # generic subroutine call
+    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
+      captures:
+        1: keyword.call.fortran
+        2: meta.subroutine-call.fortran
+    # # generic function call (or array access)
+    # - match: (?x:({{ident}})  \s*  (?=\()  )
+    #   scope: meta.function-call.fortran
+
+    - include: literals
+    - include: arithmetic-operators
+
+  associate-block:
     # associate block
     - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
       captures:
@@ -559,16 +623,55 @@ contexts:
         1: keyword.associate.fortran
 
 
-
-
-    # built-in constants
+  literals:
+    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
+    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
+      scope: constant.numeric.floating-point.fortran
+    # boolean literals
     - match: (?i:\.true\.|\.false\.)
       scope: constant.language.fortran
-
     # # numeric literals (without an exponent)
     # - match: \b[0-9.]*\b
     #   scope: constant.numeric.fortran
 
+
+  arithmetic-operators:
+    # arithmetic operators (must come after floating point literals)
+    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
+      scope: keyword.operator.fortran
+    # rename import operator/pointer assignment operator
+    - match: =>
+      scope: keyword.operator.fortran
+    # C style comparison operators
+    - match: (==|<|>|<=|>=)
+      scope: keyword.operator.c-style.fortran
+    # logical operators
+    - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
+      scope: keyword.operator.logical.fortran
+    # type member access
+    - match: \%
+      scope: keyword.operator.member-access.fortran
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ieee-intrinsics:
     # Intrinsic functions in Fortran 90
     # https://www.nsc.liu.se/~boein/f77to90/a5.html
     # 1. Function which determines if a certain argument is in an actual argument list
@@ -641,10 +744,12 @@ contexts:
         1: keyword.call.fortran
         2: support.function.fortran
 
+  nullify-statement:
     # Nullify statement
     - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
       scope: support.function.fortran
 
+  fortran-2008:
     # Fortran 2008: http://www.nag.co.uk/nagware/np/r60_doc/nag_f2008.html#AUTOTOC_6
     # Mathematics
     - match: (?x:\b  (?i:acosh|asinh|atanh|hypot|norm2|erf|erfc|erfc_scaled|gamma|log_gamma)  \b  (?=\s*\()  )
@@ -662,6 +767,7 @@ contexts:
     - match: (?x:\b  (?i:character_kinds|integer_kinds|logical_kinds|real_kinds)  \b  )
       scope: support.constant.fortran
 
+  ieee-intrinsic-modules:
     ##########################
     # IEEE Intrinsic Modules #
     ##########################
@@ -705,24 +811,6 @@ contexts:
       scope: support.function.fortran
     - match: (?xi:\b ieee_(unordered|value) \b )
       scope: support.function.fortran
-
-     
-    # generic subroutine call
-    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
-      captures:
-        1: keyword.call.fortran
-        2: meta.subroutine-call.fortran
-    # # generic function call (or array access)
-    # - match: (?x:({{ident}})  \s*  (?=\()  )
-    #   scope: meta.function-call.fortran
-
-    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
-    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
-      scope: constant.numeric.floating-point.fortran
-    # arithmetic operators (must come after floating point literals)
-    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
-      scope: keyword.operator.fortran
-
 
 
 
@@ -811,7 +899,7 @@ contexts:
   #       2: storage.type.fortran
   #     pop: true
 
-  namelist:
+  namelist-meta:
     - meta_content_scope: meta.namelist.fortran
     - match: ({{ident}})
       scope: variable.parameter.namelist.fortran
@@ -821,7 +909,7 @@ contexts:
     - match: (?<!&)\n
       pop: true
 
-  common:
+  common-block-meta:
     - meta_content_scope: meta.common-block.fortran
     - match: ({{ident}})
       scope: variable.parameter.common-block-name.fortran
