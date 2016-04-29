@@ -13,6 +13,7 @@ variables:
       | \b real               \b
       | \b complex            \b
       | \b logical            \b
+      | \b character \* \(\*\)
       | \b character          \b
       | \b double\s+precision \b
       | \b type \s* \(
