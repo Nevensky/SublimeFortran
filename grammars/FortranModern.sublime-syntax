@@ -456,13 +456,13 @@ contexts:
         1: support.function.fortran
 
     # IO: print with format string
-    - match: (?xi:\b  (print)  \s*  ( \") )
+    - match: (?xi:\b(print)\b  \s*  ( \") )
       captures:
         1: support.function.fortran
         2: string.quoted.double.fortran
       push: inside-format-string
     # IO: print with format string variable or star or number
-    - match: (?xi:\b  (print)  \s*  (\*)? (\d+)? (\w+)? )
+    - match: (?xi:\b  (print)\b  \s*  (\*)? (\d+)? (\w+)? )
       captures:
         1: support.function.fortran
         2: keyword.default-format.fortran
@@ -487,7 +487,7 @@ contexts:
         6: variable.format-string.fortran
 
     # IO: print, write, rewrite, read
-    - match: (?xi:\b  (print|write|rewrite|read)  \s*  (?= ( \( | \* | \d+ ) )  )
+    - match: (?xi:\b  (print|write|rewrite|read)\b  \s*  (?= ( \( | \* | \d+ ) )  )
       captures:
         1: support.function.fortran
 
