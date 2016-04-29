@@ -13,7 +13,7 @@ sys.path.remove(os.path.join(sublime.packages_path(), 'SublimeLinter'))
 class GfortranFixedForm(Linter):
     """Provides an interface to gfortran."""
     syntax = 'fortranfixedform'
-    cmd = 'gfortran -fsyntax-only -Wall'
+    cmd = 'gfortran -cpp -fsyntax-only -Wall'
     executable = None
     version_args = '--version'
     version_re = r'(?P<version>\d+\.\d+\.\d+)'
@@ -32,7 +32,7 @@ class GfortranFixedForm(Linter):
 class GfortranModern(Linter):
     """Provides an interface to gfortran."""
     syntax = 'fortranmodern'
-    cmd = 'gfortran -fsyntax-only -Wall'
+    cmd = 'gfortran -cpp -fsyntax-only -Wall'
     executable = None
     version_args = '--version'
     version_re = r'(?P<version>\d+\.\d+\.\d+)'
