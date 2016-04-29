@@ -640,7 +640,15 @@ contexts:
 
   literals:
     # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
-    - match: (?xi:(?<![\w\)])  [-+]?  (\d+\.\d+ | \d+\. | \.\d+ | \d+ )  ([ed][-+]?\d+)?  (_\w+)? )
+    - match: |
+        (?xi)
+        (?:
+          (?<![\w\)])                       # previous token is not a word or bracket
+          [-+]?                             # sign
+          (\d+\.\d+ | \d+\. | \.\d+ | \d+ ) # 1.1 or 1. or .1 or 1
+          ([ed][-+]?\d+)?                   # exponent
+          (_\w+)?                           # 1.0_fb format
+        )
       scope: constant.numeric.floating-point.fortran
     # boolean literals
     - match: (?i:\.true\.|\.false\.)
