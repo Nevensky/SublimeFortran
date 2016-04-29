@@ -315,20 +315,20 @@ contexts:
     - match: |
         (?xi)
         (?:^ \s*
-          (if|else\s*if|elif|endif)  \b  
+          (if|else\s*if|elif|endif)  \b
         )
       scope: keyword.control.fortran
     # select case statement
     - match: |
         (?xi)
         (?:^ \s*
-          (select\s+case)  \b  
+          (select\s+case)  \b
         )
       scope: keyword.control.fortran
     - match: |
         (?xi)
         (?:^ \s*
-          (case)  .*  (:)  \b  
+          (case)  .*  (:)  \b
         )
       captures:
         1: keyword.control.fortran
@@ -336,7 +336,7 @@ contexts:
     - match: |
         (?xi)
         (?:^ \s*
-          (where|elsewhere|forall|endwhere|endforall)  \b  
+          (where|elsewhere|forall|endwhere|endforall)  \b
         )
       scope: keyword.control.fortran
     # do loop (with optional label and number)
@@ -485,7 +485,7 @@ contexts:
         4: keyword.default-format.fortran
         5: variable.format-number.fortran
         6: variable.format-string.fortran
-    
+
     # IO: print, write, rewrite, read
     - match: (?xi:\b  (print|write|rewrite|read)  \s*  (?= ( \( | \* | \d+ ) )  )
       captures:
@@ -508,7 +508,7 @@ contexts:
 
     # # IO: other format string
     # - match: (\")(\() # "( ... )"
-    #   captures: 
+    #   captures:
     #     1: punctuation.start-of-format-string.fortran
     #     2: open-format-group.fortran
     #   push: inside-format-group
