@@ -39,21 +39,8 @@ variables:
       | protected
     )
   # linecont: '(?x:\s* & \s* (!.*)? $ \n?)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
-  formatdescr: |
-    (?xi)
-    (?:
-      (\d+)?
-      (/|pe|[aeigfxp])
-      (\d+)?
-      \.?
-      (\d+)?
-    )
-  escapeseq: |
-    (?xi)
-    (?:
-      \\
-      [nrtbfv0''"x\\]
-    )
+  formatdescr: (?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)? )
+  escapeseq: (?xi:\\ [nrtbfv0''"x\\] )
 
 
 
@@ -81,6 +68,7 @@ contexts:
     - include: flow-control
     - include: misc-keywords
     - include: user-defined-types
+    - include: format-statement
     - include: labelled-statements
     - include: data-type-attributes
     - include: io
@@ -132,11 +120,6 @@ contexts:
         2: entity.name.function.m4.fortran
 
   strings:
-    # IO: other format string
-    - match: \"\(
-      scope: punctuation.start-of-format-string.fortran meta.format-string.fortran
-      push: formatstring
-    # strings
     - match: \'
       push: singlestring
     - match: (\")
@@ -475,11 +458,11 @@ contexts:
         1: support.function.fortran
 
     # IO: print with format string
-    - match: (?xi:\b  (print)  \s*  ( \"\( )  )
+    - match: (?xi:\b  (print)  \s*  ( \") )
       captures:
         1: support.function.fortran
-        2: punctuation.start-of-format-string.fortran meta.format-string.fortran
-      push: formatstring
+        2: string.quoted.double.fortran
+      push: inside-format-string
     # IO: print with format string variable or star or number
     - match: (?xi:\b  (print)  \s*  (\*)? (\d+)? (\w+)? )
       captures:
@@ -515,14 +498,45 @@ contexts:
       captures:
         1: support.function.fortran
 
+
+  format-statement:
     # IO: format statement
     - match: (?xi:^  \s*  (\d+)  \s+  (format)  \s*  (\()  )
       captures:
-        0: format.statement.fortran
         1: entity.name.statement-label.fortran
         2: keyword.format.fortran
-        3: punctuation.parenthesis.fortran
-      push: format_statement_inside_parens
+        3: open-format-group.fortran
+      push: inside-format-group
+
+    # # IO: other format string
+    # - match: (\")(\() # "( ... )"
+    #   captures: 
+    #     1: punctuation.start-of-format-string.fortran
+    #     2: open-format-group.fortran
+    #   push: inside-format-group
+
+  inside-format-string:
+    - meta_content_scope: meta.inside-format-string.fortran
+    - match: \(
+      scope: open-format-group.fortran
+      push: inside-format-group
+    - match: \"
+      scope: string.quoted.double close-format-string.fortran
+      pop: true
+  inside-format-group:
+    # Represents the content between two () in a format group
+    - meta_content_scope: meta.inside-format-group.fortran
+    - include: strings
+    - match: \(
+      scope: open-format-group.fortran
+      push: inside-format-group
+    - match: '\d+(?=\()'
+      scope: constant.numeric.format-string-group-multiplier.fortran
+    - match: \)
+      pop: true
+      scope: close-format-group
+    - match: '{{formatdescr}}'
+      scope: constant.numeric.format-descriptor.fortran
 
 
 
@@ -821,10 +835,7 @@ contexts:
     - meta_scope: meta.preprocessor.fortran.include
     - match: (?=(?://|/\*))|$\n?
       pop: true
-    - match: \'
-      push: singlestring
-    - match: \"
-      push: doublestring
+    - include: strings
     - match: (<)
       push: include_angle_brackets
   include_angle_brackets:
@@ -923,26 +934,10 @@ contexts:
     - match: \b(?i:end)\b
       pop: true
 
-  # Stuff inside the parenthesis of format statements: format (....)
-  format_statement_inside_parens:
-    - meta_content_scope: meta.format-parenthesis.fortran
-    - match: \'
-      push: singlestring
-    - match: (\")
-      push: doublestring
-    - match: '{{formatdescr}}'
-      scope: constant.numeric.format-descriptor.fortran
-    - match: \)
-      scope: punctuation.parenthesis.fortran
-      pop: true
-
   # Stuff inside the parenthesis of format strings: print "(.....)"
   formatstring:
     - meta_content_scope: meta.format-string.fortran
-    - match: \'
-      push: singlestring
-    - match: (\")
-      push: doublestring
+    - include: strings
     - match: '{{formatdescr}}'
       scope: constant.numeric.format-descriptor.fortran
     - match: \)\"
