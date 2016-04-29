@@ -1,0 +1,97 @@
+%YAML 1.2
+---
+name: OpenMP (Fortran)
+file_extensions: []
+scope: source.openmp
+hidden: true
+
+# Reference: http://openmp.org/mp-documents/OpenMP-4.0-Fortran.pdf
+variables:
+  openmp_reduction_identifier: (?xi:(\w+|\+|-|\*|.and.|.or.|.eqv.|.negv.|max|min|iand|ior|ieor))
+
+contexts:
+  main:
+    - meta_scope: meta.openmp-statement.fortran
+    - match: (?i:\!\$omp)
+      scope: support.function.openmp.fortran
+    - match: \&$
+      scope: punctuation.line-continuation.fortran
+    - match: $
+      pop: true
+
+    - include: openmp-intrinsic-functions
+    - include: openmp-parallel
+    - include: openmp-do
+
+  openmp-parallel:
+    - match: \b(parallel)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(parallel)\b )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - include: openmp-clause
+  openmp-do:
+    - match: \b(do)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(do)\b  (\s+ nowait \b)? )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+        3: keyword.openmp.fortran
+    - include: openmp-clause
+  openmp-clause:
+    - meta_scope: meta.openmp-clause.fortran
+    - match: \b(if|num_threads)\b
+      scope: keyword.openmp.fortran
+    - match: |
+        (?x)
+        (?:
+          \b (default) \b
+          \(
+            \s*
+            (private|firstprivate|shared|none)
+            \s*
+          \)
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - match: |
+        (?x)
+        (?:
+          \b (proc_bind) \b
+          \(
+            \s*
+            (master|close|spread)
+            \s*
+          \)
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - match: (?x:\b(private|firstprivate|shared|copyin)\b \s* \()
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+    - match: |
+        (?x)
+        (?:
+          \b(reduction)\b
+          \s*
+          \(
+            \s*
+            ({{openmp_reduction_identifier}})
+            \s*
+            :
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: support.function.openmp.reduction-identifier.fortran
+      push: openmp-list
+  openmp-list:
+    - meta_scope: meta.openmp.variable-list.fortran
+    - match: \w+
+      scope: variable.parameter.openmp-list.fortran
+    - match: \)
+      pop: true

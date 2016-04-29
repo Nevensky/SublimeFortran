@@ -56,13 +56,14 @@ variables:
 
 contexts:
   main:
+    - include: openmp
+    - include: openmp-intrinsic-functions
     - include: comments
     - include: illegal
     - include: m4-macros
     - include: strings
     - include: use-statement
     - include: implicit-statement
-    - include: openmp
     - include: enumerator
     - include: program-units
     - include: flow-control
@@ -87,7 +88,9 @@ contexts:
     - include: ieee-intrinsic-modules
     - include: generic-subroutine-call
 
-
+  openmp:
+    - match: (?i:(?=\!\$omp))
+      push: Packages/SublimeFortran/grammars/OpenMP.sublime-syntax
 
   comments:
     # comments
@@ -155,11 +158,6 @@ contexts:
         1: keyword.implicit.fortran
         2: meta.implicit-specification.fortran
 
-
-  openmp:
-    # OpenMP
-    - match: (?x:^  \s*  ([!]\$)  .*  $)
-      scope: support.other.openmp.fortran
 
   enumerator:
     # enum
@@ -835,9 +833,83 @@ contexts:
     - match: (?xi:\b ieee_(unordered|value) \b )
       scope: support.function.fortran
 
-
-
-  # additional contexts
+  openmp-intrinsic-functions:
+    # Execution Environment Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_set_num_threads
+              | omp_get_num_threads
+              | omp_get_max_threads
+              | omp_get_thread_num
+              | omp_get_num_procs
+              | omp_in_parallel
+              | omp_set_dynamic
+              | omp_get_dynamic
+              | omp_get_cancellation
+              | omp_set_nested
+              | omp_get_nested
+              | omp_set_schedule
+              | omp_get_schedule
+              | omp_get_thread_limit
+              | omp_set_max_active_levels
+              | omp_get_max_active_levels
+              | omp_get_level
+              | omp_get_ancestor_thread_num
+              | omp_get_team_size
+              | omp_get_active_level
+              | omp_get_proc_bind
+              | omp_set_default_device
+              | omp_get_default_device
+              | omp_get_num_devices
+              | omp_get_num_teams
+              | omp_get_team_num
+              | omp_is_initial_device
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Lock Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_init_lock
+              | omp_init_nest_lock
+              | omp_destroy_lock
+              | omp_destroy_nest_lock
+              | omp_set_lock
+              | omp_set_nest_lock
+              | omp_unset_lock
+              | omp_unset_nest_lock
+              | omp_test_lock
+              | omp_test_nest_lock
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Timing Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_get_wtime
+              | omp_get_wtick
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Environment Variables
+    - match: |
+        (?x)
+        (?:\b ( OMP_CANCELLATION
+              | OMP_DEFAULT_DEVICE
+              | OMP_DISPLAY_ENV
+              | OMP_DYNAMIC
+              | OMP_MAX_ACTIVE_LEVELS
+              | OMP_NESTED
+              | OMP_NUM_THREADS
+              | OMP_PLACES
+              | OMP_PROC_BIND
+              | OMP_SCHEDULE
+              | OMP_STACKSIZE
+              | OMP_THREAD_LIMIT
+              | OMP_WAIT_POLICY
+              )
+        )
+      scope: support.constant.openmp.fortran
 
   preprocessor_include:
     - meta_scope: meta.preprocessor.fortran.include
