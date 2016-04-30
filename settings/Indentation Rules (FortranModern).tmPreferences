@@ -16,7 +16,7 @@
 		<string>(?xi)
 	    ^ [^!]* \bthen\b \s* (!.*)? $
 	|   ^ \s* \w+: \s* \b do \b   .* $
-	|   ^ \s* (program|subroutine|function|module|do)  \b  .* $
+	|   ^ \s* (program|subroutine|function|module|do|block)  \b  .* $
 	|   ^ \s* (where|forall) \s* (?&lt;re&gt; \((?: (?&gt; [^()]+ ) | \g&lt;re&gt; )* \) )  \s* $
 	|   ^ \s* (else|else\s*if|elsewhere) \b .* $
 	|   ^ \s* (select\s+case|case) \b .* $
@@ -25,7 +25,7 @@
 		<key>decreaseIndentPattern</key>
 		<string>(?xi)
 	    ^ \s* (end)  \b  \s* $
-	|   ^ \s* end \s* (program|subroutine|function|module|do|if|where|forall|select)  \b  .* $
+	|   ^ \s* end \s* (program|subroutine|function|module|do|block|if|where|forall|select)  \b  .* $
 	|   ^ \s* (else|else\s*if|else\s*where)  \b
 	|   ^ \s* (case) \b .* $
 		</string>
