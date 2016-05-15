@@ -19,3 +19,45 @@ Features:
  - Linter based on `gfortran` (requires the package [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to work)
 
 Pull requests are welcome :)
+
+
+## Using the linter ##
+
+This package includes a linter based on SublimeLinter3.
+
+You may need to tell SublimeLinter where gfortran is located by adding it you the paths in SublimeLinter:
+
+```
+...
+"paths": {
+    "linux": [],
+    "osx": [
+        "/usr/local/bin"
+    ],
+    "windows": []
+},
+...
+```
+Extra command line flags to gfortran may be specified in your SublimeLinter user settings file:
+```
+...
+"gfortranfixedform": {
+    "@disable": false,
+    "args": [
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+    ],
+    "excludes": []
+},
+"gfortranmodern": {
+    "@disable": false,
+    "args": [
+        "-fdefault-real-8",
+        "-fdefault-double-8",
+        "-ffree-line-length-none"
+    ],
+    "excludes": []
+},
+...
+```
+The default flags included are currently `-cpp -fsyntax-only -Wall`.
