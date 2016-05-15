@@ -553,24 +553,26 @@ contexts:
         0: namelist.statement.fortran
         1: keyword.namelist.fortran
         2: punctuation.namelist-slash.fortran
-        3: storage.type.namelist-name.fortran
+        3: entity.name.namelist.fortran
         4: punctuation.namelist-slash.fortran
       push: namelist-meta
 
   common-block:
     # common block with name
-    - match: (?xi:^  \s*  (common)  \s*  (/\w+/)  \s*  )
+    - match: (?xi:^  \s*  (common)  \s*  (/)({{ident}})(/) )
       captures:
         0: common.statement.fortran
         1: keyword.common.fortran
-        2: storage.type.common-block-name.fortran
-      push: common-block-meta
+        2: punctuation.common-slash.fortran
+        3: entity.name.common.fortran
+        4: punctuation.common-slash.fortran
+      push: namelist-meta
     # common block with no name given
     - match: (?xi:^  \s*  (common)  \s+  )
       captures:
         0: common.statement.fortran
         1: keyword.common.fortran
-      push: common-block-meta
+      push: namelist-meta
   data-statement:
     # data statement
     - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
@@ -908,6 +910,7 @@ contexts:
   #       2: storage.type.fortran
   #     pop: true
 
+  # This is a generic list of variables, used by namelist, common, etc
   namelist-meta:
     - meta_content_scope: meta.namelist.fortran
     - include: pop-at-end-of-line
@@ -916,8 +919,9 @@ contexts:
 
   # Include this to avoid popping the context when there is a line continuation
   pop-at-end-of-line:
+    # Match a comment character without a line continuation -> change context to comment
     - match: \!
-      push: comment
+      set: comment
     - match: (?=\&)
       push: line-continuation
     - match: $\n
@@ -930,18 +934,6 @@ contexts:
       scope: support.constant.line-continuation.fortran
     - include: comments
     - match: $\n
-      pop: true
-
-
-  train-wreck:
-    - meta_scope: invalid.illegal.train-wreck
-
-  common-block-meta:
-    - meta_content_scope: meta.common-block.fortran
-    - match: ({{ident}})
-      scope: variable.parameter.common-block-name.fortran
-    # Don't end the block if the newline is preceded by an &
-    - match: (?<!&)$
       pop: true
 
   blockdata:
