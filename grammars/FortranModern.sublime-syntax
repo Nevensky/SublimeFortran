@@ -231,7 +231,7 @@ contexts:
     - match: |
         (?xi)
         (?:
-          (?<!end)
+          ^ \s*
           (interface) \b
           \s* ({{ident}})?
         )
@@ -247,7 +247,6 @@ contexts:
           \s*
           ((?:{{modifier}}\s+)*)
           ({{type}}\s+)?
-          (?<!end)
           \b (function|subroutine) \b
           \s+ ({{ident}})
           \s* (\(|&)
@@ -267,7 +266,6 @@ contexts:
           \s*
           ((?:{{modifier}}\s+)*)
           ({{type}}\s+)?
-          (?<!end)
           \b (function|subroutine) \b
           \s+
           ({{ident}})
@@ -598,8 +596,8 @@ contexts:
     # coarray stuff
     - match: (?xi:^  \s*  \b(sync) \s+ (all|images|memory)\b )
       scope: support.function.coarrays.sync.fortran
-    - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) )
-      scope: constant.coarrays.fortran
+    # - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) ) # remove backreference
+    #   scope: constant.coarrays.fortran
 
   generic-subroutine-call:
     # generic subroutine call
@@ -922,7 +920,7 @@ contexts:
       push: comment
     - match: (?=\&)
       push: line-continuation
-    - match: (?<!\&)$\n
+    - match: $\n
       pop: true
 
   # Consume comments and newline then pop
