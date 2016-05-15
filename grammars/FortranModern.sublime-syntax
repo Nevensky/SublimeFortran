@@ -38,7 +38,7 @@ variables:
       | public
       | protected
     )
-  # linecont: '(?x:\s* & \s* (!.*)? $ \n?)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
+  # linecont: '(?x:\s* & \s* (!.*)? $)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
   formatdescr: (?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)? )
   escapeseq: (?xi:\\ [nrtbfv0''"x\\] )
 
@@ -840,7 +840,7 @@ contexts:
 
   preprocessor_include:
     - meta_scope: meta.preprocessor.fortran.include
-    - match: (?=(?://|/\*))|$\n?
+    - match: (?=(?://|/\*))|$
       pop: true
     - include: strings
     - match: (<)
@@ -851,7 +851,7 @@ contexts:
       pop: true
   preprocessor_errorwarning:
     - meta_scope: meta.preprocessor.diagnostic.fortran
-    - match: $\n?
+    - match: $
       pop: true
 
 
@@ -882,7 +882,7 @@ contexts:
     # Match inline LaTeX
     - match: \$
       push: inline_latex
-    - match: $\n?
+    - match: (?=$)
       pop: true
 
   inline_latex:
@@ -892,7 +892,7 @@ contexts:
       scope: markup.italic
     - match: \$
       pop: true
-    - match: $\n?
+    - match: $
       pop: true
 
   subroutine_parameter_list:
@@ -920,20 +920,38 @@ contexts:
 
   namelist-meta:
     - meta_content_scope: meta.namelist.fortran
+    - include: pop-at-end-of-line
     - match: ({{ident}})
       scope: variable.parameter.namelist.fortran
-    # Don't end the block if the newline is preceded by an &
+
+  # Include this to avoid popping the context when there is a line continuation
+  pop-at-end-of-line:
     - match: \!
       push: comment
-    - match: (?<!&)\n
+    - match: (?=\&)
+      push: line-continuation
+    - match: (?<!\&)$\n
       pop: true
+
+  # Consume comments and newline then pop
+  line-continuation:
+    - meta_scope: meta.line-continuation.fortran
+    - match: \&
+      scope: support.constant.line-continuation.fortran
+    - include: comments
+    - match: $\n
+      pop: true
+
+
+  train-wreck:
+    - meta_scope: invalid.illegal.train-wreck
 
   common-block-meta:
     - meta_content_scope: meta.common-block.fortran
     - match: ({{ident}})
       scope: variable.parameter.common-block-name.fortran
     # Don't end the block if the newline is preceded by an &
-    - match: (?<!&)\n
+    - match: (?<!&)$
       pop: true
 
   blockdata:
@@ -959,6 +977,6 @@ contexts:
   #       1: keyword.variable-attribute.fortran
   #   - match: (::)
   #     scope: keyword.operator.fortran
-  #   - match: $\n?
+  #   - match: $
   #     pop: true
 
