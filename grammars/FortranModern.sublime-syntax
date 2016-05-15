@@ -322,6 +322,12 @@ contexts:
         1: keyword.control.fortran
         2: keyword.control.fortran
         3: entity.name.tag.do-loop-label.fortran
+    # GOTO statement
+    - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
+      captures:
+        1: keyword.control.fortran
+        2: keyword.control.fortran
+        3: entity.name.statement-label
 
     # statements controling the flow of the program
     - match: |
