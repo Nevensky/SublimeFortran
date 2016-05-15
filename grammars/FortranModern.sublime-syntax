@@ -66,8 +66,8 @@ contexts:
     - include: enumerator
     - include: associate-block
     - include: block
-    - include: program-units
     - include: flow-control
+    - include: program-units
     - include: misc-keywords
     - include: user-defined-types
     - include: format-statement
@@ -283,41 +283,27 @@ contexts:
     - match: |
         (?xi)
         (?:^
-          \s* (end) \b
-          ( \s+ (?:function|subroutine|module|submodule|type|interface|program|type) )?
-          ( \s+ {{ident}} )?
+          \s* (end)
+          (
+            \s*
+            (?:function|subroutine|module|submodule|type|interface|program|type|select)
+            ( \s+ {{ident}} )?
+          )?
+          \s*     # optional space
+          (!.*)?  # optional comment
+          $       # end of line
         )
       scope: meta.end-statement.fortran
       captures:
         1: keyword.control.end.fortran
         2: keyword.program-unit.fortran
         3: entity.name.function.fortran
+        4: comment.line.fortran
 
 
 
 
   flow-control:
-    # if statement
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (if|else\s*if|elif|endif)  \b
-        )
-      scope: keyword.control.fortran
-    # select case statement
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (select\s+case)  \b
-        )
-      scope: keyword.control.fortran
-    # where/forall statement
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (where|elsewhere|forall|endwhere|endforall)  \b
-        )
-      scope: keyword.control.fortran
     # do loop (with optional label and number)
     - match: |
         (?xi)
@@ -353,9 +339,14 @@ contexts:
             | exit
             | select \s* case
             | error \s+ stop
-            | end \s* select
             | end \s* if
             | end \s* do
+            | where
+            | elsewhere
+            | forall
+            | end \s* where
+            | end \s* forall
+            | go \s+ to
             ) \b
         )
       scope: keyword.control.fortran
