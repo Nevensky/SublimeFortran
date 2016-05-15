@@ -183,8 +183,6 @@ contexts:
         (?:^
           \s* (program)
           \s+ ({{ident}})
-          \s*
-          $
         )
       captures:
         1: keyword.program-unit.fortran
@@ -196,9 +194,7 @@ contexts:
         (?:^
           \s* (type)
           (\s*::\s*|\s+)
-          (\w+)
-          \s*
-          $
+          ({{ident}})
         )
       captures:
         1: keyword.type.fortran
@@ -211,8 +207,6 @@ contexts:
         (?:^
           \s* (module)
           \s+  (\w+)
-          \s*
-          $
         )
       captures:
         1: keyword.program-unit.fortran
@@ -240,8 +234,6 @@ contexts:
           (?<!end)
           (interface) \b
           \s* ({{ident}})?
-          \s*
-          $
         )
       captures:
         1: keyword.program-unit.fortran
@@ -558,7 +550,7 @@ contexts:
 
   namelist:
     # namelist /name/ variables
-    - match: (?xi:^  \s*  (namelist)  \s*  (/)(\w+)(/)  \s*  )
+    - match: (?xi:^  \s*  (namelist)  \s*  (/)({{ident}})(/) )
       captures:
         0: namelist.statement.fortran
         1: keyword.namelist.fortran
