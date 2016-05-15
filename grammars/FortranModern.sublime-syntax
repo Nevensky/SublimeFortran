@@ -316,6 +316,12 @@ contexts:
         1: entity.name.tag.do-loop-label.fortran
         2: keyword.control.fortran
         3: entity.name.statement-label.fortran
+    - match: (?xi:^ \s* (end) \s* (do) (\s+ {{ident}})? )
+      captures:
+        0: meta.end-statement.fortran
+        1: keyword.control.fortran
+        2: keyword.control.fortran
+        3: entity.name.tag.do-loop-label.fortran
 
     # statements controling the flow of the program
     - match: |
@@ -333,14 +339,12 @@ contexts:
             | continue
             | stop
             | pause
-            | do
             | while
             | cycle
             | exit
             | select \s* case
             | error \s+ stop
             | end \s* if
-            | end \s* do
             | where
             | elsewhere
             | forall
