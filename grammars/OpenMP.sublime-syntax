@@ -7,22 +7,45 @@ hidden: true
 
 # Reference: http://openmp.org/mp-documents/OpenMP-4.0-Fortran.pdf
 variables:
+  ident: '[A-Za-z_][A-Za-z_0-9]*'
+  openmp_comment_start: (\!|^[Cc])\$omp\b
   openmp_reduction_identifier: (?xi:(\w+|\+|-|\*|.and.|.or.|.eqv.|.negv.|max|min|iand|ior|ieor))
+  openmp_schedule_kind: (?xi:(static|dynamic|guided|auto|runtime))
 
 contexts:
   main:
+    - match: (?i:(?={{openmp_comment_start}}))
+      push: openmp-main-scope
+    - include: openmp-intrinsic-functions
+
+  openmp-main-scope:
     - meta_scope: meta.openmp-statement.fortran
-    - match: (?i:\!\$omp)
+    - match: (?i:{{openmp_comment_start}})
       scope: support.function.openmp.fortran
     - match: \&$
       scope: punctuation.line-continuation.fortran
     - match: $
       pop: true
-
-    - include: openmp-intrinsic-functions
+    - match: \!.*
+      scope: comment.line.fortran
+  
     - include: openmp-parallel
     - include: openmp-do
+    - include: openmp-sections
+    - include: openmp-single
+    - include: openmp-workshare
+    - include: openmp-simd
+    - include: openmp-declare-simd
+    - include: openmp-do-simd
+    - include: openmp-target-data
 
+    - include: openmp-intrinsic-functions
+
+
+
+
+
+  # OpenMP top level statements
   openmp-parallel:
     - match: \b(parallel)\b
       scope: keyword.openmp.fortran
@@ -30,7 +53,7 @@ contexts:
       captures:
         1: keyword.openmp.fortran
         2: keyword.openmp.fortran
-    - include: openmp-clause
+    - include: openmp-clauses-parallel
   openmp-do:
     - match: \b(do)\b
       scope: keyword.openmp.fortran
@@ -39,11 +62,172 @@ contexts:
         1: keyword.openmp.fortran
         2: keyword.openmp.fortran
         3: keyword.openmp.fortran
-    - include: openmp-clause
-  openmp-clause:
-    - meta_scope: meta.openmp-clause.fortran
-    - match: \b(if|num_threads)\b
+    - include: openmp-clauses-do
+  openmp-sections:
+    - match: \b(sections)\b
       scope: keyword.openmp.fortran
+    - match: \b(section)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(sections)\b  (\s+ nowait \b)? )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+        3: keyword.openmp.fortran
+    - include: openmp-clauses-sections
+  openmp-single:
+    - match: \b(single)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(single)\b )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - include: openmp-clauses-single
+    - include: openmp-end-clauses-single
+  openmp-workshare:
+    - match: \b(workshare)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(workshare)\b  (\s+ nowait \b)? )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+        3: keyword.openmp.fortran
+  openmp-simd:
+    - match: \b(simd)\b
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(simd)\b)
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - include: openmp-clauses-simd
+  openmp-declare-simd:
+    - match: |
+        (?xi)(?:
+          \b(declare \s+ simd)\b
+          \s*
+          \( \s* ({{ident}}) \s* \)
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: entity.name.function.openmp.fortran
+    - include: openmp-clauses-declare-simd
+  openmp-do-simd:
+    - match: (?xi:\b(do \s+ simd)\b)
+      scope: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(do \s+ simd)\b  (\s+ nowait \b)? )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+        3: keyword.openmp.fortran
+    - include: openmp-clauses-simd
+    - include: openmp-clauses-do
+  openmp-target-data:
+    - match: (?xi:\b(target)\b   (\s+ data \b)? )
+      captures: 
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+    - match: (?xi:\b(end)\b \s+ \b(target)\b  (\s+ data \b)? )
+      captures:
+        1: keyword.openmp.fortran
+        2: keyword.openmp.fortran
+        3: keyword.openmp.fortran
+    - include: openmp-clause-device
+    - include: openmp-clause-map
+    - include: openmp-clause-if
+
+
+
+
+
+
+  # Define which clauses are valid for particular statements
+  openmp-clauses-parallel:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-if
+    - include: openmp-clause-numthreads
+    - include: openmp-clause-default
+    - include: openmp-clause-private
+    - include: openmp-clause-firstprivate
+    - include: openmp-clause-shared-copyin
+    - include: openmp-clause-reduction
+    - include: openmp-clause-procbind
+
+  openmp-clauses-do:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-private
+    - include: openmp-clause-firstprivate
+    - include: openmp-clause-lastprivate
+    - include: openmp-clause-reduction
+    - include: openmp-clause-schedule
+    - include: openmp-clause-collapse
+    - include: openmp-clause-ordered
+
+  openmp-clauses-sections:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-private
+    - include: openmp-clause-firstprivate
+    - include: openmp-clause-lastprivate
+
+  openmp-clauses-single:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-private
+    - include: openmp-clause-firstprivate
+
+  openmp-end-clauses-single:
+    - meta_scope: meta.openmp-end-clause.fortran
+    - include: openmp-end-clause-copyprivate
+    - include: openmp-end-clause-nowait
+
+  openmp-clauses-simd:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-safelen
+    - include: openmp-clause-linear
+    - include: openmp-clause-aligned
+    - include: openmp-clause-private
+    - include: openmp-clause-lastprivate
+    - include: openmp-clause-reduction
+    - include: openmp-clause-collapse
+
+  openmp-clauses-declare-simd:
+    - meta_scope: meta.openmp-clause.fortran
+    - include: openmp-clause-simdlen
+    - include: openmp-clause-linear
+    - include: openmp-clause-aligned
+    - include: openmp-clause-uniform
+    - include: openmp-clause-inbranch
+    - include: openmp-clause-notinbranch
+
+
+
+
+
+
+
+
+
+
+
+
+
+  openmp-list:
+    # A list of variables inside parenthesis
+    - meta_scope: meta.openmp.variable-list.fortran
+    - match: ({{openmp_comment_start}})
+      scope: support.function.openmp.fortran
+    - match: \w+
+      scope: variable.parameter.openmp.fortran
+    - match: \)
+      pop: true
+
+  # Specific clauses
+  openmp-clause-if:
+    - match: \b(if)\b
+      scope: keyword.openmp.fortran
+
+  openmp-clause-numthreads:
+    - match: \b(num_threads)\b
+      scope: keyword.openmp.fortran
+
+  openmp-clause-default:
     - match: |
         (?x)
         (?:
@@ -57,6 +241,7 @@ contexts:
       captures:
         1: keyword.openmp.fortran
         2: keyword.openmp.fortran
+  openmp-clause-procbind:
     - match: |
         (?x)
         (?:
@@ -70,10 +255,62 @@ contexts:
       captures:
         1: keyword.openmp.fortran
         2: keyword.openmp.fortran
-    - match: (?x:\b(private|firstprivate|shared|copyin)\b \s* \()
+  openmp-clause-collapse:
+    - match: |
+        (?xi)
+        (?:
+          \b(collapse)\b  # "collapse"
+          \s* \( \s*
+            (\d+)?       # number inside parenthesis
+            (\w+)?       # word inside parenthesis
+          \s* \)
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: constant.numeric.openmp.fortran
+        3: variable.parameter.openmp.fortran
+  openmp-clause-private:
+    - match: (?x:\b(private)\b \s* \()
       captures:
         1: keyword.openmp.fortran
       push: openmp-list
+  openmp-clause-firstprivate:
+    - match: (?x:\b(firstprivate)\b \s* \()
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+  openmp-clause-shared-copyin:
+    - match: (?x:\b(private|shared|copyin)\b \s* \()
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+  openmp-clause-lastprivate:
+    - match: (?x:\b(lastprivate)\b \s* \()
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+  openmp-clause-ordered:
+    - match: (?xi:\b(ordered)\b)
+      scope: keyword.openmp.fortran
+  openmp-clause-simdlen:
+    - match: (?xi:\b(simdlen)\b  \s*  \( \s* (\d+)?(\w+)? \s* \) )
+      captures:
+        1: keyword.openmp.fortran
+        2: constant.numeric.openmp.fortran
+        3: variable.parameter.openmp.fortran
+  openmp-clause-uniform:
+    - match: (?xi:\b(uniform)\b  \s*  \()
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+  openmp-clause-inbranch:
+    - match: (?xi:\b(inbranch)\b)
+      scope: keyword.openmp.fortran
+  openmp-clause-notinbranch:
+    - match: (?xi:\b(notinbranch)\b)
+      scope: keyword.openmp.fortran
+  openmp-clause-reduction:
+    # Reduction clause, with operator and list
     - match: |
         (?x)
         (?:
@@ -89,9 +326,143 @@ contexts:
         1: keyword.openmp.fortran
         2: support.function.openmp.reduction-identifier.fortran
       push: openmp-list
-  openmp-list:
-    - meta_scope: meta.openmp.variable-list.fortran
-    - match: \w+
-      scope: variable.parameter.openmp-list.fortran
-    - match: \)
-      pop: true
+  openmp-clause-schedule:
+    # Schedule clause, with kind and optional chunk size
+    - match: |
+        (?x)
+        (?:
+          \b(schedule)\b                # schedule clause
+          \s*
+          \(                            # open bracket
+            \s*
+            ({{openmp_schedule_kind}})  # schedule kind
+            (, \s* \d+)?                # optional chunk size
+            \s*
+            :
+        )
+      captures:
+        1: keyword.openmp.fortran
+        2: support.function.openmp.schedule-kind.fortran
+      push: openmp-list
+  openmp-clause-safelen:
+    - match: (?xi:\b (safelen) \s* \( \s* (\d+)?(\w+)? \s*  \) \b)
+      captures:
+        1: keyword.openmp.fortran
+        2: constant.numeric.fortran
+        3: variable.parameter.fortran
+  openmp-clause-linear:
+    - match: (?xi:\b (linear) \s* \( \b)
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+  openmp-clause-aligned:
+    - match: (?xi:\b (aligned) \s* \( \b)
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+
+  openmp-clause-device:
+    - match: (?xi:\b (aligned) \s* \( \b)
+      captures:
+        1: keyword.openmp.fortran
+      push: openmp-list
+
+  # Specific end clauses
+  openmp-end-clause-copyprivate:
+    - match: \b(copyprivate)\b(?=\s*\()
+      scope: keyword.openmp.fortran
+      push: openmp-list
+  openmp-end-clause-nowait:
+    - match: \b(nowait)\b
+      scope: keyword.openmp.fortran
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # Intrinsic functions and variables, matched without !$OMP
+  openmp-intrinsic-functions:
+    # Execution Environment Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_set_num_threads
+              | omp_get_num_threads
+              | omp_get_max_threads
+              | omp_get_thread_num
+              | omp_get_num_procs
+              | omp_in_parallel
+              | omp_set_dynamic
+              | omp_get_dynamic
+              | omp_get_cancellation
+              | omp_set_nested
+              | omp_get_nested
+              | omp_set_schedule
+              | omp_get_schedule
+              | omp_get_thread_limit
+              | omp_set_max_active_levels
+              | omp_get_max_active_levels
+              | omp_get_level
+              | omp_get_ancestor_thread_num
+              | omp_get_team_size
+              | omp_get_active_level
+              | omp_get_proc_bind
+              | omp_set_default_device
+              | omp_get_default_device
+              | omp_get_num_devices
+              | omp_get_num_teams
+              | omp_get_team_num
+              | omp_is_initial_device
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Lock Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_init_lock
+              | omp_init_nest_lock
+              | omp_destroy_lock
+              | omp_destroy_nest_lock
+              | omp_set_lock
+              | omp_set_nest_lock
+              | omp_unset_lock
+              | omp_unset_nest_lock
+              | omp_test_lock
+              | omp_test_nest_lock
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Timing Routines
+    - match: |
+        (?xi)
+        (?:\b ( omp_get_wtime
+              | omp_get_wtick
+              )(?=\s*\()
+        )
+      scope: support.function.openmp.fortran
+    # Environment Variables
+    - match: |
+        (?x)
+        (?:\b ( OMP_CANCELLATION
+              | OMP_DEFAULT_DEVICE
+              | OMP_DISPLAY_ENV
+              | OMP_DYNAMIC
+              | OMP_MAX_ACTIVE_LEVELS
+              | OMP_NESTED
+              | OMP_NUM_THREADS
+              | OMP_PLACES
+              | OMP_PROC_BIND
+              | OMP_SCHEDULE
+              | OMP_STACKSIZE
+              | OMP_THREAD_LIMIT
+              | OMP_WAIT_POLICY
+              )
+        )
+      scope: support.constant.openmp.fortran
