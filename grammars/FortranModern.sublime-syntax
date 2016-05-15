@@ -311,13 +311,6 @@ contexts:
           (select\s+case)  \b
         )
       scope: keyword.control.fortran
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (case)  .*  (:)  \b
-        )
-      captures:
-        1: keyword.control.fortran
     # where/forall statement
     - match: |
         (?xi)
@@ -349,6 +342,7 @@ contexts:
             | else
             | elseif
             | elif
+            | case\s+default
             | case
             | continue
             | stop
