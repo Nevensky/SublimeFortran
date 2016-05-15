@@ -596,6 +596,8 @@ contexts:
 
   coarrays:
     # coarray stuff
+    - match: (?xi:\b codimension \b)
+      scope: keyword.coarrays.fortran
     - match: (?xi:^  \s*  \b(sync) \s+ (all|images|memory)\b )
       scope: support.function.coarrays.sync.fortran
     # - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) ) # remove backreference
