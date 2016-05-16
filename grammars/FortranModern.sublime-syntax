@@ -6,21 +6,28 @@ scope: source.modern-fortran
 
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
-  type: |
-    (?xi)
-    (?:
-        \b integer            \b
-      | \b real               \b
-      | \b complex            \b
-      | \b logical            \b
-      | \b character \* \(\*\)
-      | \b character          \b
-      | \b double\s+precision \b
-      | \b type \s* \(
-                        \s* [\w]+ \s*
-                    \)
-    )
   modifier: '(?xi:elemental|pure|impure|recursive|module)'
+  # attr_spec: |
+  #   (?xi)
+  #   (?:
+  #       allocatable
+  #     | asynchronous
+  #     | automatic
+  #     | bind \s* \( \s* C \s* (, \s* name \s* = \s* {{binding_label}})? \)
+  #     | contiguous
+  #     | dimension \s* \( {{array_spec}} \)
+  #     | external
+  #     | intent(intn...)
+  #     | intrinsic
+  #     | optional
+  #     | parameter
+  #     | pointer
+  #     | private
+  #     | protected
+  #     | public
+  #     | save
+  #     | target
+  #   )
   attribute: |
     (?xi)
     (?:
@@ -42,6 +49,93 @@ variables:
   formatdescr: (?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)? )
   escapeseq: (?xi:\\ [nrtbfv0''"x\\] )
 
+  int_constant_expr: (?xi:\d+|\w+) # only literals and variables supported so far
+  int_literal_constant: (?xi:\d+)
+  kind_selector: |
+    (?xi)
+    (?:
+      \s*
+      (?:
+        \(  (?:\s* kind \s* = \s* )?  {{int_constant_expr}} \)
+      |
+        \* \s* {{int_literal_constant}}
+      )
+      \s*
+    )
+  specification_expression: (?xi:TODO_NOT_IMPLEMENTED|\d+)
+  type_param_value: | # incomplete
+    (?xi:)
+    (?:
+      {{specification_expression}}
+    |
+      \*
+    |
+      :
+    )
+  char_length: |
+    (?xi)
+    (?:
+      {{int_literal_constant}}
+    |
+      \( {{type_param_value}} \)
+    )
+  char_selector: | # incomplete
+    (?xi)
+    (?:
+      \(
+        \s*
+        (?:
+          LEN \s* = \s* {{type_param_value}} \s* , \s* KIND \s* = \s* {{int_constant_expr}}
+        |
+          {{type_param_value}} \s* ,  \s* (?:KIND \s* =)?  \s* {{int_constant_expr}}
+        |
+          KIND \s* = \s* {{int_constant_expr}}  \s* (?: , \s* LEN \s* = \s* {{type_param_value}})?
+        |
+          (?:LEN \s* = \s* )? {{type_param_value}}
+        )
+        \s*
+      \)
+    |
+      \s* \* \s* {{char_length}} \s* ,? \s*
+    )
+  intrinsic_type_spec: |
+    (?xi)
+    (?:
+      \bCHARACTER\b \s* {{char_selector}}
+    |
+      \b(?:COMPLEX|INTEGER|LOGICAL|REAL)\b (?:\s* {{kind_selector}})?
+    |
+      \b DOUBLE \s+ (?:COMPLEX|PRECISION) \b
+    )
+  derived_type_spec: | # missing type_param_spec_list
+    (?xi)
+    (?:
+      {{ident}}
+    )
+  declaration_type_spec_part1: |
+    (?xi)
+    (?:
+      {{intrinsic_type_spec}}
+    |
+      type \s* \( \s* {{intrinsic_type_spec}} \s* \)
+    |
+      type \s* \( \s* {{derived_type_spec}} \s* \)
+    |
+      class \s* \( \s* {{derived_type_spec}} \s* \)
+    |
+      class \s* \( \s* \* \s* \)
+    )
+  declaration_type_spec: | # TODO not used yet
+    (?xi)
+    (?:
+      {{declaration_type_spec_part1}}
+      (
+        \s* :: \s*
+      |
+        \s* , {{attr_spec_list}} \s* :: \s*
+      )?
+      {{entity_decl_list}}
+    )
 
 
 
@@ -246,10 +340,10 @@ contexts:
         (?:^
           \s*
           ((?:{{modifier}}\s+)*)
-          ({{type}}\s+)?
-          \b (function|subroutine) \b
+          ({{declaration_type_spec_part1}}\s+)?
+          \b (FUNCTION|SUBROUTINE) \b
           \s+ ({{ident}})
-          \s* (\(|&)
+          \s* (\(|&) # match opening bracket
         )
       scope: meta.subroutine-declaration.fortran
       captures:
@@ -265,14 +359,13 @@ contexts:
         (?:^
           \s*
           ((?:{{modifier}}\s+)*)
-          ({{type}}\s+)?
-          \b (function|subroutine) \b
-          \s+
-          ({{ident}})
+          ({{declaration_type_spec_part1}}\s+)?
+          \b (FUNCTION|SUBROUTINE) \b
+          \s+ ({{ident}})
           \s*
         )
-      scope: meta.subroutine-declaration.fortran
       captures:
+        0: meta.subroutine-declaration.fortran
         1: keyword.modifier.fortran
         2: storage.type.fortran
         3: keyword.program-unit.fortran
@@ -385,10 +478,7 @@ contexts:
 
   user-defined-types:
     # types
-    - match: "{{type}}"
-      scope: storage.type.fortran
-    # user defined types
-    - match: \b(?i:(type\([\s\w]+\)))\b
+    - match: "{{declaration_type_spec_part1}}"
       scope: storage.type.fortran
 
 
