@@ -31,12 +31,10 @@
 		</string>
 
 		<!-- Ignore C preprocessor commands and comments which are 72 characters long. -->
-		<!-- Ignore comment lines for now, because they break indentation. -->
 		<key>unIndentedLinePattern</key>
 		<string>(?xi) 
 		^\s* \#\w+ .* $
 	|   ^\s* !.{71}$
-	|   ^\s* !.*$
 		</string>
 
 		<!-- Indent after lines with line continuation character -->
