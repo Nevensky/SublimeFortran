@@ -23,41 +23,52 @@ Pull requests are welcome :)
 
 ## Using the linter ##
 
-This package includes a linter based on SublimeLinter3.
+This package includes a linter based on SublimeLinter3. SublimeLinter user settings can be modified by selecting `SublimeLinter Settings - User` from the Command Palette.
 
-You may need to tell SublimeLinter where gfortran is located by adding it you the paths in SublimeLinter:
+You may need to tell SublimeLinter where `gfortran` is located by adding it to `paths` in SublimeLinter user settings:
 
 ```
-...
-"paths": {
-    "linux": [],
-    "osx": [
-        "/usr/local/bin"
-    ],
-    "windows": []
-},
-...
+{
+    "user": {
+        ...
+        "paths": {
+            "linux": [],
+            "osx": [
+                "/usr/local/bin"
+            ],
+            "windows": []
+        },
+        ...
+    }
+}
 ```
-Extra command line flags to gfortran may be specified in your SublimeLinter user settings file:
+Additional command line flags for `gfortran` may be also specified:
 ```
-...
-"gfortranfixedform": {
-    "@disable": false,
-    "args": [
-        "-fdefault-real-8",
-        "-fdefault-double-8"
-    ],
-    "excludes": []
-},
-"gfortranmodern": {
-    "@disable": false,
-    "args": [
-        "-fdefault-real-8",
-        "-fdefault-double-8",
-        "-ffree-line-length-none"
-    ],
-    "excludes": []
-},
-...
+{
+    "user": {
+        "linters": {
+            ...
+            "gfortranfixedform": {
+                "@disable": false,
+                "args": [
+                    "-fdefault-real-8",
+                    "-fdefault-double-8"
+                ],
+                "excludes": []
+            },
+            "gfortranmodern": {
+                "@disable": false,
+                "args": [
+                    "-fdefault-real-8",
+                    "-fdefault-double-8",
+                    "-ffree-line-length-none"
+                ],
+                "excludes": []
+            },
+            ...
+        },
+    ...
+    }
+}
 ```
 The default flags included are currently `-cpp -fsyntax-only -Wall`.
