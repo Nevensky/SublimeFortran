@@ -248,9 +248,10 @@ contexts:
         4: support.function.any-method
 
   contains_statement:
-    - match: (?xi:\b contains \b)
-      scope: keyword.other.contains.fortran
-
+    - match: (?xi:^ \s* (contains) \b \s* ({{eol_comment}})? $)
+      captures:
+        1: keyword.other.contains.fortran
+        2: comment.line.fortran
 
   comments:
     # comments
