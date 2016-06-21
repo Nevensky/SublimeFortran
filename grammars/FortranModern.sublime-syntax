@@ -375,7 +375,6 @@ contexts:
       captures:
         0: meta.else-statement.fortran
         1: keyword.control.fortran
-        2: entity.name.tag.construct_name.fortran
   else_if_then_end_of_statement:
     # This is hard to match due to line breaks
     - match: (?xi:\b (then) \b \s+ ({{ident}}))
