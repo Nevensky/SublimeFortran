@@ -448,6 +448,7 @@ contexts:
         3: entity.name.statement-label.fortran constant.numeric
         4: variable.do_loop_variable.fortran
         5: keyword.operator.fortran
+    
     # block_if_statement
     - match: |
         (?xi)
@@ -466,14 +467,15 @@ contexts:
         1: entity.name.tag.construct_name.fortran
         2: keyword.control.fortran
 
-
-
-    - match: (?xi:^ \s* (end) \s* (do) (\s+ {{ident}})? )
+    # end_do_statement and end_if_statement
+    - match: (?xi:^ \s* (end) \s* (do|if) \b (?:\s+ ({{ident}}) )? )
       captures:
         0: meta.end-statement.fortran
         1: keyword.control.fortran
         2: keyword.control.fortran
         3: entity.name.tag.construct_name.fortran
+
+
     # GOTO statement
     - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
       captures:
