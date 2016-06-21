@@ -153,103 +153,235 @@ variables:
 contexts:
   main:
     - include: Packages/SublimeFortran/grammars/OpenMP.sublime-syntax
+    - include: allocation
+    - include: associate_statement
+    - include: block
+    - include: block-data-statement
+    - include: call_statement
+    - include: coarrays
     - include: comments
+    - include: common-block
+    - include: contains_statement
+    - include: data-statement
+    - include: data-type-attributes
+    - include: do_while_statement # must come before do
+    - include: do_statement
+    - include: end_construct
+    - include: end_program_unit
+    - include: entry_statement
+    - include: enumerator
+    - include: format-statement
+    - include: goto_statement
+    - include: if_block_statement
     - include: illegal
+    - include: implicit-statement
+    - include: include_statement
+    - include: io
+    - include: labelled-statements
+    - include: literals # must come before operators
+    - include: arithmetic-operators
     - include: m4-macros
+    - include: misc-flow-control
+    - include: namelist
+    - include: nullify-statement
+    - include: operator_statement
+    - include: preprocessor
+    - include: program-units
+    - include: public-private-protected
+    - include: return_statement
     - include: strings
     - include: use-statement
-    - include: implicit-statement
-    - include: enumerator
-    - include: associate-block
-    - include: block
-    - include: flow-control
-    - include: program-units
-    - include: misc-keywords
     - include: user-defined-types
-    - include: format-statement
-    - include: labelled-statements
-    - include: data-type-attributes
-    - include: io
-    - include: allocation
-    - include: preprocessor
-    - include: namelist
-    - include: common-block
-    - include: data-statement
-    - include: block-data-statement
-    - include: public-private-protected
-    - include: coarrays
-    - include: ieee-intrinsics
-    - include: nullify-statement
-    - include: fortran-2008
+    # intrinsics come last
     - include: ieee-intrinsic-modules
-    - include: generic-subroutine-call
+    - include: ieee-intrinsics
+    - include: fortran-2008-intrinsics
+
+  allocation:
+    - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
+      captures:
+        1: support.function.fortran
+        2: variable.other.fortran
+
+  assignment_statement:
+    - match: (?i:\b assignment\b)
+      scope: storage.type.fortran
+
+  associate_statement:
+    - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
+      captures:
+        1: keyword.associate.fortran
+
+  call_statement:
+    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
+      captures:
+        1: keyword.call.fortran
+        2: meta.subroutine-call.fortran
+
+  contains_statement:
+    - match: (?xi:\b contains \b)
+      scope: keyword.other.contains.fortran
+
+  block:
+    - match: |
+        (?xi)
+        (?:^
+          \s* (?: ({{construct_name}}) : )?
+          \s* (block) \b
+          \s* ({{eol_comment}})?)
+          $
+      captures:
+        1: entity.name.tag.construct_name
+        2: keyword.control.fortran
+        3: comment.line.fortran
+
+  block-data-statement:
+    # block data statement
+    - match: (?xi:^  \s*  (block\s*data)  \s+  (\w+)  )
+      captures:
+        1: keyword.block-data.fortran
+        2: storage.block-data.fortran
+      push: blockdata
+  blockdata:
+    - meta_content_scope: meta.common-block.fortran
+    - match: \b(?i:end)\b
+      pop: true
+
 
   comments:
     # comments
     - match: \!
       push: comment
-  illegal:
-    # tabs are illegal
-    - match: \t
-      scope: invalid.illegal.tab.fortran
+  comment:
+    - meta_scope: comment.line.fortran
+    # Match inline LaTeX
+    - match: \$
+      push: comment_inline_latex
+    - match: (?=$)
+      pop: true
+  comment_inline_latex:
+    - meta_scope: meta.inline_latex.fortran
+    - meta_content_scope: markup.bold
+    - match: \\\w+
+      scope: markup.italic
+    - match: \$
+      pop: true
+    - match: $
+      pop: true
 
-  m4-macros:
-    # M4 macro quoted strings, comments, variables and macro definitions
-    - match: \`
-      push: m4macrostring
-    - match: (?x:\b dnl \b )
-      push: comment
-    - match: \$\d+
-      scope: variable.parameter.m4.fortran
-    - match: |
-        (?x)
-        (?:
-          \b
-          (define)
-          \(
-          \s*
-          `(\w+)'
-        )
+  common-block:
+    # common block with name
+    - match: (?xi:^  \s*  (common)  \s*  (/)({{ident}})(/) )
       captures:
-        1: keyword.m4.define.fortran
-        2: entity.name.function.m4.fortran
+        0: common.statement.fortran
+        1: keyword.common.fortran
+        2: punctuation.common-slash.fortran
+        3: entity.name.common.fortran
+        4: punctuation.common-slash.fortran
+      push: namelist-meta
+    # common block with no name given
+    - match: (?xi:^  \s*  (common)  \s+  )
+      captures:
+        0: common.statement.fortran
+        1: keyword.common.fortran
+      push: namelist-meta
 
-  strings:
-    - match: \'
-      push: singlestring
-    - match: (\")
-      push: doublestring
+  data-statement:
+    # data statement
+    - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
+      captures:
+        1: keyword.data.fortran
+        2: storage.data.fortran
 
-  use-statement:
-    # use statements etc
+  do_while_statement: # (must come before do_statement)
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (?: ({{construct_name}}) : )?         # 1 optional do statement label
+          \s* \b (do) \b                        # 2 do keyword
+          \s* ({{stmt_label}})?                 # 3 statement label with comma
+          \s* ,?                                #   optional comma
+          \s* \b (while) \b                     # 4 while keyword
+          (?= \s* \( )                          #   lookahead to expect opening parenthesis
+          # Can't use this stuff:
+          # \s* \(                                #   opening parenthesis
+          #         .*                            #   logical scalar expression
+          # \s* \)                                #   closing parenthesis
+        )
+      scope: meta.do_while_statement.fortran
+      captures:
+        1: entity.name.tag.construct_name.fortran
+        2: keyword.control.fortran
+        3: entity.name.statement-label.fortran constant.numeric
+        4: keyword.control.fortran
+
+  do_statement:
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (?: ({{construct_name}}) : )?         # optional do statement label
+          \s* \b (do \s+ concurrent|do) \b      # do keyword
+          \s* ({{stmt_label}})?                 # statement label with comma
+          \s* (?:
+                ,?                              # optional comma
+                \s* ({{ident}})                 # loop variable name
+                \s* (=)                         # equals sign
+                # Can't match this stuff due to lack of regex for an expression
+                # \s* an_expr_                  # expression 1
+                # \s* ,                         # comma
+                # \s* an_expr_                  # expression 2
+                # (
+                #   \s* ,
+                #   \s* an_expr_                # expression 3
+                # )?
+              )?
+        )
+      scope: meta.do_statement.fortran
+      captures:
+        1: entity.name.tag.construct_name.fortran
+        2: keyword.control.fortran
+        3: entity.name.statement-label.fortran constant.numeric
+        4: variable.do_loop_variable.fortran
+        5: keyword.operator.fortran
+
+  end_construct:
     - match: |
         (?xi)
         (?:^
-          \s* (use)
-          \s+ (\w+)
-          ( (,) \s* (only) \s* (:) )?
+          \s* (end)
+          \s* (associate|block|do|forall|if|select|where) \b
+              (\s+ {{ident}})?                    # optional label
+          \s* ([^!]+)? \b                         # anything else is illegal
         )
       captures:
-        0: use.statement.fortran
-        1: keyword.use.fortran
-        2: storage.type.module.fortran
-        3: optional.group.use.statement.fortran
-        5: keyword.only.fortran
+        0: meta.end-statement.fortran
+        1: keyword.control.fortran
+        2: keyword.control.fortran
+        3: entity.name.tag.construct_name.fortran
+        4: invalid.illegal
 
-  implicit-statement:
-    # implicit statement
+  end_program_unit:
     - match: |
         (?xi)
-        (?:
-          (implicit)
-          \s+
-          (none|.*)
+        (?:^
+          \s* (end) \b                                          # 1 end keyword
+          \s* (?:
+            (block\s+data|function|module|program|subroutine)\b # 2 optional keyword
+            (?: \s+ ({{ident}}) )?                              # 3 optional unit name
+          )?
+          # ([^!]+\b)?                                  # 4 illegal
+          $
         )
       captures:
-        0: implicit.statement.fortran
-        1: keyword.implicit.fortran
-        2: meta.implicit-specification.fortran
+        0: meta.end-program-unit.fortran
+        1: keyword.control.end.fortran
+        2: keyword.control.program-unit.fortran
+        3: entity.name.function.fortran
+        4: invalid.illegal
 
+  entry_statement:
+    - match: (?i:\b entry\b)
+      scope: keyword.control.programming-units.fortran
 
   enumerator:
     # enum
@@ -271,6 +403,201 @@ contexts:
     - match: (?xi:^  \s*  (endenum) \b)
       captures:
         1: keyword.enum.fortran
+
+  format-statement:
+    # IO: format statement
+    - match: (?xi:^  \s*  (\d+)  \s+  (format)  \s*  (\()  )
+      captures:
+        1: entity.name.statement-label.fortran
+        2: keyword.format.fortran
+        3: open-format-group.fortran
+      push: inside-format-group
+
+  goto_statement:
+    - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
+      captures:
+        1: keyword.control.fortran
+        2: keyword.control.fortran
+        3: entity.name.statement-label
+
+  if_block_statement:
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (?: ({{construct_name}}) : )?         # 1 optional if statement label
+          \s* \b (if) \b                        # 2 if keyword
+          (?= \s* \( )                          #   lookahead to expect opening parenthesis
+          # Can't match this stuff due to lack of regex for an expression
+          # \s* \(                                #   opening parenthesis
+          #         .*                            #   logical scalar expression
+          # \s* \)                                #   closing parenthesis
+          # \s* \b (then) \b                      # 3 then keyword
+        )
+      scope: meta.if_block_statement.fortran
+      captures:
+        1: entity.name.tag.construct_name.fortran
+        2: keyword.control.fortran
+
+  illegal:
+    # tabs are illegal
+    - match: \t
+      scope: invalid.illegal.tab.fortran
+
+  implicit-statement:
+    # implicit statement
+    - match: |
+        (?xi)
+        (?:
+          (implicit)
+          \s+
+          (none|.*)
+        )
+      captures:
+        0: implicit.statement.fortran
+        1: keyword.implicit.fortran
+        2: meta.implicit-specification.fortran
+
+  include_statement:
+    - match: (?i:\b include\b)
+      scope: keyword.control.programming-units.fortran
+
+  m4-macros:
+    # M4 macro quoted strings, comments, variables and macro definitions
+    - match: \`
+      push: m4_macro_string
+    - match: (?x:\b dnl \b )
+      push: comment
+    - match: \$\d+
+      scope: variable.parameter.m4.fortran
+    - match: |
+        (?x)
+        (?:
+          \b
+          (define)
+          \(
+          \s*
+          `(\w+)'
+        )
+      captures:
+        1: keyword.m4.define.fortran
+        2: entity.name.function.m4.fortran
+  m4_macro_string:
+    - meta_scope: string.quoted.m4macro.fortran
+    - match: (\')
+      pop: true
+
+  namelist:
+    # namelist /name/ variables
+    - match: (?xi:^  \s*  (namelist)  \s*  (/)({{ident}})(/) )
+      captures:
+        0: namelist.statement.fortran
+        1: keyword.namelist.fortran
+        2: punctuation.namelist-slash.fortran
+        3: entity.name.namelist.fortran
+        4: punctuation.namelist-slash.fortran
+      push: namelist-meta
+
+  # This is a generic list of variables, used by namelist, common, etc
+  namelist-meta:
+    - meta_content_scope: meta.namelist.fortran
+    - include: pop-at-end-of-line
+    - match: ({{ident}})
+      scope: variable.parameter.namelist.fortran
+
+  nullify-statement:
+    # Nullify statement
+    - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
+      scope: support.function.fortran
+
+  operator_statement:
+    - match: (?i:\b operator\b)
+      scope: storage.type.fortran
+
+  preprocessor:
+    # preprocessor logic
+    - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|elif|ifndef|else|endif)  \b  .*  $)
+      scope: keyword.control.preprocessor.fortran
+    # preprocessor include
+    - match: (?xi:^  \s*  \#  \s*  (include|import)  \b  )
+      scope: keyword.control.preprocessor.fortran
+      push: preprocessor_include
+    # preprocessor warning
+    - match: (?xi:^  \s*  \#  \s*  (error|warning)  \b  )
+      scope: keyword.control.preprocessor.fortran
+      push: preprocessor_errorwarning
+  preprocessor_include:
+    - meta_scope: meta.preprocessor.fortran.include
+    - match: (?=(?://|/\*))|$
+      pop: true
+    - include: strings
+    - match: (<)
+      push: preprocessor_include_angle_brackets
+  preprocessor_include_angle_brackets:
+    - meta_scope: string.quoted.other.lt-gt.include.fortran
+    - match: (>)
+      pop: true
+  preprocessor_errorwarning:
+    - meta_scope: meta.preprocessor.diagnostic.fortran
+    - match: $
+      pop: true
+
+  return_statement:
+    - match: (?i:\b return\b)
+      scope: keyword.control.programming-units.fortran
+
+  strings:
+    - match: \'
+      push: string_single
+    - match: (\")
+      push: string_double
+  string_single:
+    - meta_scope: string.quoted.single.fortran
+    - match: \'\'
+      scope: constant.character.escape.apostrophe.fortran
+    - match: '{{escapeseq}}'
+      scope: constant.character.escape.backslash.fortran
+    - match: \'
+      pop: true
+  string_double:
+    - meta_scope: string.quoted.double.fortran
+    - match: \"\"
+      scope: constant.character.escape.quote.fortran
+    - match: '{{escapeseq}}'
+      scope: constant.character.escape.backslash.fortran
+    - match: \"
+      pop: true
+
+  use-statement:
+    # use statements etc
+    - match: |
+        (?xi)
+        (?:^
+          \s* (use)
+          \s+ (\w+)
+          ( (,) \s* (only) \s* (:) )?
+        )
+      captures:
+        0: use.statement.fortran
+        1: keyword.use.fortran
+        2: storage.type.module.fortran
+        3: optional.group.use.statement.fortran
+        5: keyword.only.fortran
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   program-units:
     # program definition
@@ -398,118 +725,11 @@ contexts:
 
 
 
-  flow-control:
-    # do_while_statement (must come before do_statement)
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (?: ({{construct_name}}) : )?         # 1 optional do statement label
-          \s* \b (do) \b                        # 2 do keyword
-          \s* ({{stmt_label}})?                 # 3 statement label with comma
-          \s* ,?                                #   optional comma
-          \s* \b (while) \b                     # 4 while keyword
-          (?= \s* \( )                          #   lookahead to expect opening parenthesis
-          # Can't use this stuff:
-          # \s* \(                                #   opening parenthesis
-          #         .*                            #   logical scalar expression
-          # \s* \)                                #   closing parenthesis
-        )
-      scope: meta.do_while_statement.fortran
-      captures:
-        1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
-        3: entity.name.statement-label.fortran constant.numeric
-        4: keyword.control.fortran
-    # do_statement
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (?: ({{construct_name}}) : )?         # optional do statement label
-          \s* \b (do|do \s+ concurrent) \b      # do keyword
-          \s* ({{stmt_label}})?                 # statement label with comma
-          \s* (?:
-                ,?                              # optional comma
-                \s* ({{ident}})                 # loop variable name
-                \s* (=)                         # equals sign
-                # Can't match this stuff due to lack of regex for an expression
-                # \s* an_expr_                  # expression 1
-                # \s* ,                         # comma
-                # \s* an_expr_                  # expression 2
-                # (
-                #   \s* ,
-                #   \s* an_expr_                # expression 3
-                # )?
-              )?
-        )
-      scope: meta.do_statement.fortran
-      captures:
-        1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
-        3: entity.name.statement-label.fortran constant.numeric
-        4: variable.do_loop_variable.fortran
-        5: keyword.operator.fortran
     
-    # block_if_statement
-    - match: |
-        (?xi)
-        (?:^ \s*
-          (?: ({{construct_name}}) : )?         # 1 optional if statement label
-          \s* \b (if) \b                        # 2 if keyword
-          (?= \s* \( )                          #   lookahead to expect opening parenthesis
-          # Can't match this stuff due to lack of regex for an expression
-          # \s* \(                                #   opening parenthesis
-          #         .*                            #   logical scalar expression
-          # \s* \)                                #   closing parenthesis
-          # \s* \b (then) \b                      # 3 then keyword
-        )
-      scope: meta.block_if_statement.fortran
-      captures:
-        1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
-
-    # end_construct
-    - match: |
-        (?xi)
-        (?:^
-          \s* (end)
-          \s* (associate|block|do|forall|if|select|where) \b
-              (\s+ {{ident}})?                    # optional label
-          \s* ([^!]+)? \b                         # anything else is illegal
-        )
-      captures:
-        0: meta.end-statement.fortran
-        1: keyword.control.fortran
-        2: keyword.control.fortran
-        3: entity.name.tag.construct_name.fortran
-        4: invalid.illegal
-
-    # end_program_unit
-    - match: |
-        (?xi)
-        (?:^
-          \s* (end) \b                                          # 1 end keyword
-          \s* (?:
-            (block\s+data|function|module|program|subroutine)\b # 2 optional keyword
-            (?: \s+ ({{ident}}) )?                              # 3 optional unit name
-          )?
-          # ([^!]+\b)?                                  # 4 illegal
-          $
-        )
-      captures:
-        0: meta.end-program-unit.fortran
-        1: keyword.control.end.fortran
-        2: keyword.control.program-unit.fortran
-        3: entity.name.function.fortran
-        4: invalid.illegal
 
 
-    # GOTO statement
-    - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
-      captures:
-        1: keyword.control.fortran
-        2: keyword.control.fortran
-        3: entity.name.statement-label
 
+  misc-flow-control:
     # statements controling the flow of the program
     - match: |
         (?xi)
@@ -538,28 +758,6 @@ contexts:
         )
       scope: keyword.control.fortran
 
-
-
-
-
-
-
-
-
-
-
-
-
-  misc-keywords:
-    # contains
-    - match: (?xi:\b contains \b)
-      scope: keyword.other.contains.fortran
-    # programming units
-    - match: \b(?i:(entry|return|include))\b
-      scope: keyword.control.programming-units.fortran
-    # other
-    - match: \b(?i:(operator|assignment))\b
-      scope: storage.type.fortran
 
   user-defined-types:
     # types
@@ -653,15 +851,6 @@ contexts:
         1: support.function.fortran
 
 
-  format-statement:
-    # IO: format statement
-    - match: (?xi:^  \s*  (\d+)  \s+  (format)  \s*  (\()  )
-      captures:
-        1: entity.name.statement-label.fortran
-        2: keyword.format.fortran
-        3: open-format-group.fortran
-      push: inside-format-group
-
     # # IO: other format string
     # - match: (\")(\() # "( ... )"
     #   captures:
@@ -696,66 +885,6 @@ contexts:
 
 
 
-  allocation:
-    # allocate, deallocate
-    - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
-      captures:
-        1: support.function.fortran
-        2: variable.other.fortran
-
-  preprocessor:
-    # preprocessor logic
-    - match: (?xi:^  \s*  \#  \s*  (define|undef|if|ifdef|elif|ifndef|else|endif)  \b  .*  $)
-      scope: keyword.control.preprocessor.fortran
-    # preprocessor include
-    - match: (?xi:^  \s*  \#  \s*  (include|import)  \b  )
-      scope: keyword.control.preprocessor.fortran
-      push: preprocessor_include
-    # preprocessor warning
-    - match: (?xi:^  \s*  \#  \s*  (error|warning)  \b  )
-      scope: keyword.control.preprocessor.fortran
-      push: preprocessor_errorwarning
-
-  namelist:
-    # namelist /name/ variables
-    - match: (?xi:^  \s*  (namelist)  \s*  (/)({{ident}})(/) )
-      captures:
-        0: namelist.statement.fortran
-        1: keyword.namelist.fortran
-        2: punctuation.namelist-slash.fortran
-        3: entity.name.namelist.fortran
-        4: punctuation.namelist-slash.fortran
-      push: namelist-meta
-
-  common-block:
-    # common block with name
-    - match: (?xi:^  \s*  (common)  \s*  (/)({{ident}})(/) )
-      captures:
-        0: common.statement.fortran
-        1: keyword.common.fortran
-        2: punctuation.common-slash.fortran
-        3: entity.name.common.fortran
-        4: punctuation.common-slash.fortran
-      push: namelist-meta
-    # common block with no name given
-    - match: (?xi:^  \s*  (common)  \s+  )
-      captures:
-        0: common.statement.fortran
-        1: keyword.common.fortran
-      push: namelist-meta
-  data-statement:
-    # data statement
-    - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
-      captures:
-        1: keyword.data.fortran
-        2: storage.data.fortran
-  block-data-statement:
-    # block data statement
-    - match: (?xi:^  \s*  (block\s*data)  \s+  (\w+)  )
-      captures:
-        1: keyword.block-data.fortran
-        2: storage.block-data.fortran
-      push: blockdata
 
   public-private-protected:
     # public/private/protected keywords
@@ -773,36 +902,6 @@ contexts:
     # - match: (?xi:(?<=\w) (\[) ([^\]]*) (]) ) # remove backreference
     #   scope: constant.coarrays.fortran
 
-  generic-subroutine-call:
-    # generic subroutine call
-    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
-      captures:
-        1: keyword.call.fortran
-        2: meta.subroutine-call.fortran
-    # # generic function call (or array access)
-    # - match: (?x:({{ident}})  \s*  (?=\()  )
-    #   scope: meta.function-call.fortran
-
-    - include: literals
-    - include: arithmetic-operators
-
-  associate-block:
-    # associate block
-    - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
-      captures:
-        1: keyword.associate.fortran
-  block:
-    - match: |
-        (?xi)
-        (?:^
-          \s* (?: ({{construct_name}}) : )?
-          \s* (block) \b
-          \s* ({{eol_comment}})?)
-          $
-      captures:
-        1: entity.name.tag.construct_name
-        2: keyword.control.fortran
-        3: comment.line.fortran
 
 
   literals:
@@ -841,16 +940,6 @@ contexts:
     # type member access
     - match: \%
       scope: keyword.operator.member-access.fortran
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -934,12 +1023,7 @@ contexts:
         1: keyword.call.fortran
         2: support.function.fortran
 
-  nullify-statement:
-    # Nullify statement
-    - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
-      scope: support.function.fortran
-
-  fortran-2008:
+  fortran-2008-intrinsics:
     # Fortran 2008: http://www.nag.co.uk/nagware/np/r60_doc/nag_f2008.html#AUTOTOC_6
     # Mathematics
     - match: (?x:\b  (?i:acosh|asinh|atanh|hypot|norm2|erf|erfc|erfc_scaled|gamma|log_gamma)  \b  (?=\s*\()  )
@@ -1003,62 +1087,23 @@ contexts:
       scope: support.function.fortran
 
 
-  preprocessor_include:
-    - meta_scope: meta.preprocessor.fortran.include
-    - match: (?=(?://|/\*))|$
-      pop: true
-    - include: strings
-    - match: (<)
-      push: include_angle_brackets
-  include_angle_brackets:
-    - meta_scope: string.quoted.other.lt-gt.include.fortran
-    - match: (>)
-      pop: true
-  preprocessor_errorwarning:
-    - meta_scope: meta.preprocessor.diagnostic.fortran
-    - match: $
-      pop: true
 
 
-  m4macrostring:
-    - meta_scope: string.quoted.m4macro.fortran
-    - match: (\')
-      pop: true
-  singlestring:
-    - meta_scope: string.quoted.single.fortran
-    - match: \'\'
-      scope: constant.character.escape.apostrophe.fortran
-    - match: '{{escapeseq}}'
-      scope: constant.character.escape.backslash.fortran
-    - match: \'
-      pop: true
-  doublestring:
-    - meta_scope: string.quoted.double.fortran
-    - match: \"\"
-      scope: constant.character.escape.quote.fortran
-    - match: '{{escapeseq}}'
-      scope: constant.character.escape.backslash.fortran
-    - match: \"
-      pop: true
 
 
-  comment:
-    - meta_scope: comment.line.fortran
-    # Match inline LaTeX
-    - match: \$
-      push: inline_latex
-    - match: (?=$)
-      pop: true
 
-  inline_latex:
-    - meta_scope: meta.inline_latex.fortran
-    - meta_content_scope: markup.bold
-    - match: \\\w+
-      scope: markup.italic
-    - match: \$
-      pop: true
-    - match: $
-      pop: true
+
+
+
+
+
+
+
+
+
+
+
+
 
   subroutine_parameter_list:
     - meta_content_scope: meta.subroutine-parameter-list.fortran
@@ -1083,12 +1128,6 @@ contexts:
   #       2: storage.type.fortran
   #     pop: true
 
-  # This is a generic list of variables, used by namelist, common, etc
-  namelist-meta:
-    - meta_content_scope: meta.namelist.fortran
-    - include: pop-at-end-of-line
-    - match: ({{ident}})
-      scope: variable.parameter.namelist.fortran
 
   # Include this to avoid popping the context when there is a line continuation
   pop-at-end-of-line:
@@ -1107,11 +1146,6 @@ contexts:
       scope: support.constant.line-continuation.fortran
     - include: comments
     - match: $\n
-      pop: true
-
-  blockdata:
-    - meta_content_scope: meta.common-block.fortran
-    - match: \b(?i:end)\b
       pop: true
 
   # Stuff inside the parenthesis of format strings: print "(.....)"
