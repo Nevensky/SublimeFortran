@@ -166,6 +166,9 @@ contexts:
     - include: data-type-attributes
     - include: do_while_statement # must come before do
     - include: do_statement
+    - include: else_statement
+    - include: else_if_statement
+    - include: else_if_then_end_of_statement
     - include: end_program_unit # must come before end_construct
     - include: end_construct
     - include: entry_statement
@@ -348,6 +351,37 @@ contexts:
         3: entity.name.statement-label.fortran constant.numeric
         4: variable.do_loop_variable.fortran
         5: keyword.operator.fortran
+
+  else_statement:
+    - match: |
+        (?xi)
+        (?:^ \s*
+          (else)
+          (?! \s* if \b)            # not an else if statement
+          (?: \s+ ({{ident}}) )?    # optional label
+        )
+      captures:
+        0: meta.else-statement.fortran
+        1: keyword.control.fortran
+        2: entity.name.tag.construct_name.fortran
+  else_if_statement:
+    # requires else_if_then_end_of_statement to capture label
+    - match: |
+        (?xi)
+        (?:^
+          \s* (else\s*if)     # 1 keyword
+          \s* \(              #   opening parenthesis
+        )
+      captures:
+        0: meta.else-statement.fortran
+        1: keyword.control.fortran
+        2: entity.name.tag.construct_name.fortran
+  else_if_then_end_of_statement:
+    # This is hard to match due to line breaks
+    - match: (?xi:\b (then) \b \s+ ({{ident}}))
+      captures:
+        1: keyword.control.fortran
+        2: entity.name.tag.construct_name.fortran
 
   end_construct:
     - match: |
@@ -742,9 +776,6 @@ contexts:
           \b( assign
             | to
             | then
-            | else
-            | elseif
-            | elif
             | case\s+default
             | case
             | continue
