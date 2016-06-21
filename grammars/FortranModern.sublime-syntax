@@ -155,7 +155,7 @@ contexts:
     - include: Packages/SublimeFortran/grammars/OpenMP.sublime-syntax
     - include: allocation
     - include: associate_statement
-    - include: block
+    - include: block_statement
     - include: block_data_statement
     - include: call_statement
     - include: coarrays
@@ -212,26 +212,7 @@ contexts:
       captures:
         1: keyword.associate.fortran
 
-  call_statement:
-    - match: |
-        (?xi)
-        (?:
-          \b  (call)
-          \s+ (?: ({{ident}}) \s* % \s* ({{ident}})
-                | ({{ident}})
-              )
-        )
-      captures:
-        1: keyword.call.fortran
-        2: variable.other.fortran
-        3: support.function.any-method
-        4: support.function.any-method
-
-  contains_statement:
-    - match: (?xi:\b contains \b)
-      scope: keyword.other.contains.fortran
-
-  block:
+  block_statement:
     - match: |
         (?xi)
         (?:^
@@ -250,6 +231,25 @@ contexts:
       captures:
         1: keyword.control.fortran
         2: entity.name.function.fortran
+
+  call_statement:
+    - match: |
+        (?xi)
+        (?:
+          \b  (call)
+          \s+ (?: ({{ident}}) \s* % \s* ({{ident}})
+                | ({{ident}})
+              )
+        )
+      captures:
+        1: keyword.call.fortran
+        2: variable.other.fortran
+        3: support.function.any-method
+        4: support.function.any-method
+
+  contains_statement:
+    - match: (?xi:\b contains \b)
+      scope: keyword.other.contains.fortran
 
 
   comments:
