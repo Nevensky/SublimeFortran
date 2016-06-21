@@ -381,7 +381,7 @@ contexts:
           \s* (end)
           (
             \s*
-            (?:function|subroutine|module|submodule|type|interface|program|type|select)
+            (?:submodule|type|interface|type|select)
             ( \s+ {{ident}} )?
           )?
           \s*     # optional space
@@ -467,13 +467,40 @@ contexts:
         1: entity.name.tag.construct_name.fortran
         2: keyword.control.fortran
 
-    # end_do_statement and end_if_statement
-    - match: (?xi:^ \s* (end) \s* (do|if) \b (?:\s+ ({{ident}}) )? )
+    # end_construct
+    - match: |
+        (?xi)
+        (?:^
+          \s* (end)
+          \s* (associate|block|do|forall|if|select|where) \b
+              (\s+ {{ident}})?                    # optional label
+          \s* ([^!]+)? \b                         # anything else is illegal
+        )
       captures:
         0: meta.end-statement.fortran
         1: keyword.control.fortran
         2: keyword.control.fortran
         3: entity.name.tag.construct_name.fortran
+        4: invalid.illegal
+
+    # end_program_unit
+    - match: |
+        (?xi)
+        (?:^
+          \s* (end) \b                                          # 1 end keyword
+          \s* (?:
+            (block\s+data|function|module|program|subroutine)\b # 2 optional keyword
+            (?: \s+ ({{ident}}) )?                              # 3 optional unit name
+          )?
+          # ([^!]+\b)?                                  # 4 illegal
+          $
+        )
+      captures:
+        0: meta.end-program-unit.fortran
+        1: keyword.control.end.fortran
+        2: keyword.control.program-unit.fortran
+        3: entity.name.function.fortran
+        4: invalid.illegal
 
 
     # GOTO statement
@@ -503,12 +530,9 @@ contexts:
             | exit
             | select \s* case
             | error \s+ stop
-            | end \s* if
             | where
             | elsewhere
             | forall
-            | end \s* where
-            | end \s* forall
             | go \s+ to
             ) \b
         )
@@ -765,9 +789,6 @@ contexts:
   associate-block:
     # associate block
     - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
-      captures:
-        1: keyword.associate.fortran
-    - match: (?xi:^ \s* (end\s*associate))
       captures:
         1: keyword.associate.fortran
   block:
