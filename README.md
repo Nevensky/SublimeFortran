@@ -20,6 +20,19 @@ Features:
 
 Pull requests are welcome :)
 
+## Disabling rulers ##
+
+The Fixed Form Fortran syntax included in this package sets some rulers to help code indentation and show where the 72 character limit is. If you find these distracting, they can be disabled by creating a language specific settings file.
+
+To do this, create a file called `FortranFixedForm.sublime-settings` in your `Packages/User/` containing the following:
+```
+{
+    "rulers": []
+}
+```
+
+
+
 
 ## Using the linter ##
 
