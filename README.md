@@ -25,7 +25,7 @@ Pull requests are welcome :)
 The Fixed Form Fortran syntax included in this package sets some rulers to help code indentation and show where the 72 character limit is. If you find these distracting, they can be disabled by creating a language specific settings file.
 
 To do this, create a file called `FortranFixedForm.sublime-settings` in your `Packages/User/` containing the following:
-```
+```JSON
 {
     "rulers": []
 }
@@ -40,10 +40,9 @@ This package includes a linter based on SublimeLinter3. SublimeLinter user setti
 
 You may need to tell SublimeLinter where `gfortran` is located by adding it to `paths` in SublimeLinter user settings:
 
-```
+```JSON
 {
     "user": {
-        ...
         "paths": {
             "linux": [],
             "osx": [
@@ -51,16 +50,14 @@ You may need to tell SublimeLinter where `gfortran` is located by adding it to `
             ],
             "windows": []
         },
-        ...
     }
 }
 ```
 Additional command line flags for `gfortran` may be also specified:
-```
+```JSON
 {
     "user": {
         "linters": {
-            ...
             "gfortranfixedform": {
                 "@disable": false,
                 "args": [
@@ -78,9 +75,7 @@ Additional command line flags for `gfortran` may be also specified:
                 ],
                 "excludes": []
             },
-            ...
         },
-    ...
     }
 }
 ```
