@@ -142,7 +142,7 @@ variables:
 
 
 
-
+  eol_comment: (?xi:!.*) # comment that consumes up to end of line
 
 
 
@@ -792,13 +792,17 @@ contexts:
       captures:
         1: keyword.associate.fortran
   block:
-    # block
-    - match: (?xi:^ \s* (block)\b)
+    - match: |
+        (?xi)
+        (?:^
+          \s* (?: ({{construct_name}}) : )?
+          \s* (block) \b
+          \s* ({{eol_comment}})?)
+          $
       captures:
-        1: keyword.block.fortran
-    - match: (?xi:^ \s* (end\s*block)\b)
-      captures:
-        1: keyword.block.fortran
+        1: entity.name.tag.construct_name
+        2: keyword.control.fortran
+        3: comment.line.fortran
 
 
   literals:
