@@ -156,7 +156,7 @@ contexts:
     - include: allocation
     - include: associate_statement
     - include: block
-    - include: block-data-statement
+    - include: block_data_statement
     - include: call_statement
     - include: coarrays
     - include: comments
@@ -166,8 +166,8 @@ contexts:
     - include: data-type-attributes
     - include: do_while_statement # must come before do
     - include: do_statement
+    - include: end_program_unit # must come before end_construct
     - include: end_construct
-    - include: end_program_unit
     - include: entry_statement
     - include: enumerator
     - include: format-statement
@@ -213,10 +213,19 @@ contexts:
         1: keyword.associate.fortran
 
   call_statement:
-    - match: (?xi:\b  (call)  \s*  ({{ident}})  \s*  (?=\(|$)  )
+    - match: |
+        (?xi)
+        (?:
+          \b  (call)
+          \s+ (?: ({{ident}}) \s* % \s* ({{ident}})
+                | ({{ident}})
+              )
+        )
       captures:
         1: keyword.call.fortran
-        2: meta.subroutine-call.fortran
+        2: variable.other.fortran
+        3: support.function.any-method
+        4: support.function.any-method
 
   contains_statement:
     - match: (?xi:\b contains \b)
@@ -235,17 +244,12 @@ contexts:
         2: keyword.control.fortran
         3: comment.line.fortran
 
-  block-data-statement:
+  block_data_statement:
     # block data statement
-    - match: (?xi:^  \s*  (block\s*data)  \s+  (\w+)  )
+    - match: (?xi:^  \s*  (block\s*data)  (?:\s+  ({{ident}}))? )
       captures:
-        1: keyword.block-data.fortran
-        2: storage.block-data.fortran
-      push: blockdata
-  blockdata:
-    - meta_content_scope: meta.common-block.fortran
-    - match: \b(?i:end)\b
-      pop: true
+        1: keyword.control.fortran
+        2: entity.name.function.fortran
 
 
   comments:
@@ -373,7 +377,7 @@ contexts:
           $
         )
       captures:
-        0: meta.end-program-unit.fortran
+        0: meta.end-statement.fortran
         1: keyword.control.end.fortran
         2: keyword.control.program-unit.fortran
         3: entity.name.function.fortran
