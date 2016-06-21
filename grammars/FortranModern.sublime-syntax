@@ -281,7 +281,7 @@ contexts:
           \s+ ({{ident}})
         )
       captures:
-        1: keyword.program-unit.fortran
+        1: keyword.control.program-unit.fortran
         2: entity.name.function.program.fortran
 
     # type definition
@@ -305,7 +305,7 @@ contexts:
           \s+  (\w+)
         )
       captures:
-        1: keyword.program-unit.fortran
+        1: keyword.control.program-unit.fortran
         2: entity.name.function.module.fortran
 
     # submodule definition
@@ -332,7 +332,7 @@ contexts:
           \s* ({{ident}})?
         )
       captures:
-        1: keyword.program-unit.fortran
+        1: keyword.control.program-unit.fortran
         2: entity.name.function.fortran
       # push: interface
 
@@ -351,7 +351,7 @@ contexts:
       captures:
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.program-unit.fortran
+        3: keyword.control.program-unit.fortran
         4: entity.name.function.fortran
       push: subroutine_parameter_list
 
@@ -370,7 +370,7 @@ contexts:
         0: meta.subroutine-declaration.fortran
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.program-unit.fortran
+        3: keyword.control.program-unit.fortran
         4: entity.name.function.fortran
       # push: subroutines
 
@@ -391,7 +391,7 @@ contexts:
       scope: meta.end-statement.fortran
       captures:
         1: keyword.control.end.fortran
-        2: keyword.program-unit.fortran
+        2: keyword.control.program-unit.fortran
         3: entity.name.function.fortran
         4: comment.line.fortran
 
