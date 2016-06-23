@@ -140,7 +140,7 @@ variables:
   construct_name: (?xi:{{ident}} \s* (?=:)) # do/if statement label (a valid identifier followed by colon)
   stmt_label: (?xi:\b \d+ \b) # a statement label (a number)
 
-
+  valid_range_symbol: (?xi:[abcdefghijklmnopqrstuvwxyz_$])
 
   eol_comment: (?xi:!.*) # comment that consumes up to end of line
 
@@ -177,7 +177,7 @@ contexts:
     - include: goto_statement
     - include: if_block_statement
     - include: illegal
-    - include: implicit-statement
+    - include: implicit_statement
     - include: include_statement
     - include: io
     - include: labelled-statements
@@ -482,19 +482,38 @@ contexts:
     - match: \t
       scope: invalid.illegal.tab.fortran
 
-  implicit-statement:
-    # implicit statement
-    - match: |
-        (?xi)
-        (?:
-          (implicit)
-          \s+
-          (none|.*)
-        )
+  implicit_statement:
+    - match: (?xi:^ \s* (implicit) \s+ (?=none|{{declaration_type_spec_part1}}))
+      scope: meta.implicit_statement.fortran
       captures:
-        0: implicit.statement.fortran
-        1: keyword.implicit.fortran
-        2: meta.implicit-specification.fortran
+        1: keyword.control.fortran # implicit
+      push: implicit_declaration_list
+    - match: (?xi:^ \s* implicit \s+ (.*))
+      captures:
+        1: invalid.illegal
+  implicit_declaration_list:
+    - meta_content_scope: implicit_declaration_list.fortran meta.implicit_statement.fortran
+    - include: pop-at-end-of-line
+    - match: (?xi:\b (none) \b)
+      scope: keyword.control.fortran
+    - match: (?xi:{{eol_comment}})
+      scope: comment.line
+      pope: true
+    - match: (?xi:({{declaration_type_spec_part1}}) \s* \()
+      captures:
+        1: storage.type.fortran
+      push: implicit_range_list
+  implicit_range_list:
+    - meta_content_scope: meta.implicit_range_list.fortran
+    - include: pop-at-closing-parenthesis
+    - match: (?xi:({{valid_range_symbol}}) \s* (-) \s* ({{valid_range_symbol}}))
+      scope: meta.implicit_range.fortran
+      captures:
+        1: constant.character.range.fortran
+        2: keyword.operator.range.fortran
+        3: constant.character.range.fortran
+    - match: (?xi:{{valid_range_symbol}})
+      scope: constant.character.range.fortran
 
   include_statement:
     - match: (?i:\b include\b)
@@ -1189,6 +1208,11 @@ contexts:
     - match: (?=\&)
       push: line-continuation
     - match: $\n
+      pop: true
+  # Include this to avoid popping the context when there is a line continuation
+  pop-at-closing-parenthesis:
+    - include: pop-at-end-of-line
+    - match: \)
       pop: true
 
   # Consume comments and newline then pop
