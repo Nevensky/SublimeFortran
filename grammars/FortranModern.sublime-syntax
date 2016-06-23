@@ -178,6 +178,7 @@ contexts:
     - include: if_block_statement
     - include: illegal
     - include: implicit_statement
+    - include: import_statement
     - include: include_statement
     - include: io
     - include: labelled-statements
@@ -515,9 +516,13 @@ contexts:
     - match: (?xi:{{valid_range_symbol}})
       scope: constant.character.range.fortran
 
+  import_statement:
+    - match: (?xi:\b import \b)
+      scope: keyword.control.fortran
+    
   include_statement:
-    - match: (?i:\b include\b)
-      scope: keyword.control.programming-units.fortran
+    - match: (?xi:\b include \b)
+      scope: keyword.control.fortran
 
   m4-macros:
     # M4 macro quoted strings, comments, variables and macro definitions
