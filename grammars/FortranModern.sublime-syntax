@@ -215,7 +215,7 @@ contexts:
   associate_statement:
     - match: (?xi:^ \s* (associate) (\() (.*) (\)) )
       captures:
-        1: keyword.associate.fortran
+        1: keyword.control.associate.fortran
 
   block_statement:
     - match: |
@@ -227,14 +227,14 @@ contexts:
           $
       captures:
         1: entity.name.tag.construct_name
-        2: keyword.control.fortran
+        2: keyword.control.block.fortran
         3: comment.line.fortran
 
   block_data_statement:
     # block data statement
     - match: (?xi:^  \s*  (block\s*data)  (?:\s+  ({{ident}}))? )
       captures:
-        1: keyword.control.fortran
+        1: keyword.control.block_data.fortran
         2: entity.name.function.fortran
 
   call_statement:
@@ -321,9 +321,9 @@ contexts:
       scope: meta.do_while_statement.fortran
       captures:
         1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
+        2: keyword.control.do.fortran
         3: entity.name.statement-label.fortran constant.numeric
-        4: keyword.control.fortran
+        4: keyword.control.while.fortran
 
   do_statement:
     - match: |
@@ -349,10 +349,10 @@ contexts:
       scope: meta.do_statement.fortran
       captures:
         1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
+        2: keyword.control.do.fortran
         3: entity.name.statement-label.fortran constant.numeric
         4: variable.do_loop_variable.fortran
-        5: keyword.operator.fortran
+        5: keyword.operator.equals.fortran
 
   else_statement:
     - match: |
@@ -364,7 +364,7 @@ contexts:
         )
       captures:
         0: meta.else-statement.fortran
-        1: keyword.control.fortran
+        1: keyword.control.else.fortran
         2: entity.name.tag.construct_name.fortran
   else_if_statement:
     # requires else_if_then_end_of_statement to capture label
@@ -376,12 +376,12 @@ contexts:
         )
       captures:
         0: meta.else-statement.fortran
-        1: keyword.control.fortran
+        1: keyword.control.else_if.fortran
   else_if_then_end_of_statement:
     # This is hard to match due to line breaks
     - match: (?xi:\b (then) \b \s+ ({{ident}}))
       captures:
-        1: keyword.control.fortran
+        1: keyword.control.then.fortran
         2: entity.name.tag.construct_name.fortran
 
   end_construct:
@@ -395,8 +395,8 @@ contexts:
         )
       captures:
         0: meta.end-statement.fortran
-        1: keyword.control.fortran
-        2: keyword.control.fortran
+        1: keyword.control.end.fortran
+        2: keyword.control.construct.fortran
         3: entity.name.tag.construct_name.fortran
         4: invalid.illegal
 
@@ -421,7 +421,7 @@ contexts:
 
   entry_statement:
     - match: (?i:\b entry\b)
-      scope: keyword.control.programming-units.fortran
+      scope: keyword.control.entry.fortran
 
   enumerator:
     # enum
@@ -456,8 +456,8 @@ contexts:
   goto_statement:
     - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
       captures:
-        1: keyword.control.fortran
-        2: keyword.control.fortran
+        1: keyword.control.goto.fortran
+        2: keyword.control.goto.fortran
         3: entity.name.statement-label
 
   if_block_statement:
@@ -476,7 +476,7 @@ contexts:
       scope: meta.if_block_statement.fortran
       captures:
         1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
+        2: keyword.control.if.fortran
 
   illegal:
     # tabs are illegal
@@ -487,7 +487,7 @@ contexts:
     - match: (?xi:^ \s* (implicit) \s+ (?=none|{{declaration_type_spec_part1}}))
       scope: meta.implicit_statement.fortran
       captures:
-        1: keyword.control.fortran # implicit
+        1: keyword.control.implicit.fortran # implicit
       push: implicit_declaration_list
     - match: (?xi:^ \s* implicit \s+ (.*))
       captures:
@@ -496,7 +496,7 @@ contexts:
     - meta_content_scope: implicit_declaration_list.fortran meta.implicit_statement.fortran
     - include: pop-at-end-of-line
     - match: (?xi:\b (none) \b)
-      scope: keyword.control.fortran
+      scope: keyword.control.none.fortran
     - match: (?xi:{{eol_comment}})
       scope: comment.line
       pope: true
@@ -518,11 +518,11 @@ contexts:
 
   import_statement:
     - match: (?xi:\b import \b)
-      scope: keyword.control.fortran
+      scope: keyword.control.import.fortran
     
   include_statement:
     - match: (?xi:\b include \b)
-      scope: keyword.control.fortran
+      scope: keyword.control.include.fortran
 
   m4-macros:
     # M4 macro quoted strings, comments, variables and macro definitions
@@ -605,8 +605,8 @@ contexts:
       pop: true
 
   return_statement:
-    - match: (?i:\b return\b)
-      scope: keyword.control.programming-units.fortran
+    - match: (?xi:\b return \b)
+      scope: keyword.control.return.fortran
 
   select_case_statement:
     - match: |
@@ -623,7 +623,7 @@ contexts:
       scope: meta.select_case_statement.fortran
       captures:
         1: entity.name.tag.construct_name.fortran
-        2: keyword.control.fortran
+        2: keyword.control.select_case.fortran
 
   strings:
     - match: \'
@@ -688,7 +688,7 @@ contexts:
           \s+ ({{ident}})
         )
       captures:
-        1: keyword.control.program-unit.fortran
+        1: keyword.control.program.fortran
         2: entity.name.function.program.fortran
 
     # type definition
@@ -701,7 +701,7 @@ contexts:
         )
       captures:
         1: keyword.type.fortran
-        2: keyword.operator.fortran
+        2: keyword.operator.double_colon.fortran
         3: entity.name.function.type.fortran
 
     # module definition
@@ -712,7 +712,7 @@ contexts:
           \s+  (\w+)
         )
       captures:
-        1: keyword.control.program-unit.fortran
+        1: keyword.control.module.fortran
         2: entity.name.function.module.fortran
 
     # submodule definition
@@ -739,7 +739,7 @@ contexts:
           \s* ({{ident}})?
         )
       captures:
-        1: keyword.control.program-unit.fortran
+        1: keyword.control.interface.fortran
         2: entity.name.function.fortran
       # push: interface
 
@@ -758,7 +758,7 @@ contexts:
       captures:
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.control.program-unit.fortran
+        3: keyword.control.function.fortran
         4: entity.name.function.fortran
       push: subroutine_parameter_list
 
@@ -777,7 +777,7 @@ contexts:
         0: meta.subroutine-declaration.fortran
         1: keyword.modifier.fortran
         2: storage.type.fortran
-        3: keyword.control.program-unit.fortran
+        3: keyword.control.function.fortran
         4: entity.name.function.fortran
       # push: subroutines
 
@@ -829,10 +829,9 @@ contexts:
             | where
             | elsewhere
             | forall
-            | go \s+ to
             ) \b
         )
-      scope: keyword.control.fortran
+      scope: keyword.control.other.fortran
 
 
   user-defined-types:
@@ -1003,10 +1002,10 @@ contexts:
   arithmetic-operators:
     # arithmetic operators (must come after floating point literals)
     - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
-      scope: keyword.operator.fortran
+      scope: keyword.operator.arithmetic.fortran
     # rename import operator/pointer assignment operator
     - match: =>
-      scope: keyword.operator.fortran
+      scope: keyword.operator.pointer_assignment.fortran
     # C style comparison operators
     - match: (==|<|>|<=|>=)
       scope: keyword.operator.c-style.fortran
