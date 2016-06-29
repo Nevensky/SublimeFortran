@@ -420,8 +420,42 @@ contexts:
         4: invalid.illegal
 
   entry_statement:
-    - match: (?i:\b entry\b)
-      scope: keyword.control.entry.fortran
+    - match: (?xi:^ \s* (entry) \s+ ({{ident}}))
+      captures:
+        1: keyword.control.entry.fortran
+        2: entity.name.function.entry.fortran
+      push:
+        - meta_scope: meta.entry_statement.fortran
+        - include: pop-at-end-of-line
+        - match: \(
+          push:
+            - meta_content_scope: meta.dummy_argument_list.fortran
+            - include: pop-at-closing-parenthesis
+            - include: dummy_argument_list
+        - match: (?xi:(result) \s* \( \s* ({{ident}}) \s* \) )
+          captures:
+            1: keyword.control.result.fortran
+            2: variable.parameter.fortran
+        - include: bind
+  bind:
+    - match: (?xi:\b (bind) \b  \s* (?=\())
+      scope: keyword.control.bind.fortran
+      push:
+        - include: pop-at-closing-parenthesis
+        - match: (?xi:\b C \b)
+          scope: support.constant.bind_c.fortran
+        - match: \,
+          scope: punctuation.separator.fortran
+        - match: (?xi:\b (name) \s* (=) \s* ({{ident}}) )
+          captures:
+            1: variable.parameter.fortran
+            2: keyword.operator.equals.fortran
+            3: entity.name.bind_name.fortran
+  dummy_argument_list:
+    - match: (?xi:{{ident}})
+      scope: variable.parameter.fortran
+    - match: \,
+      scope: punctuation.separator.fortran
 
   enumerator:
     # enum
