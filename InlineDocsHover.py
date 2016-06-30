@@ -17,12 +17,12 @@ intrinsics = {k:"minihtml/"+k+".html" for k in [
 "SYSTEM_CLOCK", "TAN", "TANH", "THIS_IMAGE", "TIME", "TIME8", "TINY", "TRAILZ", "TRANSFER", "TRANSPOSE", "TRIM", "TTYNAM", "UBOUND", "UCOBOUND", "UMASK", "UNLINK", "UNPACK", "VERIFY", "XOR"] }
 
 class InlineDocsHover(sublime_plugin.EventListener):
-    @classmethod
-    def is_applicable(cls, settings):
-        return settings.get('syntax').contains("Fortran")
-
     def on_hover(self, view, point, hover_zone):
-        if not hover_zone == sublime.HOVER_TEXT:
+        if "Fortran" not in view.settings().get('syntax'):
+            return
+        if view.settings().get('fortran_disable_docs', False):
+            return
+        if hover_zone != sublime.HOVER_TEXT:
             return
         wordregion = view.word(point)
         word = view.substr(wordregion).upper()

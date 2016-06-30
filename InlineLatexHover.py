@@ -6,27 +6,28 @@ import urllib.request
 from base64 import b64encode
 
 class InlineLatexHover(sublime_plugin.EventListener):
-    @classmethod
-    def is_applicable(cls, settings):
-        return settings.get('syntax').contains("Fortran")
-
     def on_hover(self, view, point, hover_zone):
-        if hover_zone == sublime.HOVER_TEXT:
-            scope = view.scope_name(point)
-            score = sublime.score_selector(scope, "meta.inline_latex.fortran")
-            if score > 0:
-                # We are hovering over some embedded latex
-                region = InlineLatexHover.extract_inline_latex_scope(view, point)
-                latex = view.substr(region)
-                # todo: get colors from theme popupCss
-                bg, fg = 'ffffff', '222222'
-                params = urllib.parse.urlencode({'cht': "tx", 'chl': latex, 'chf': 'bg,s,'+bg, 'chco': fg})
-                imgurl = "http://chart.googleapis.com/chart?"+params
-                with urllib.request.urlopen(imgurl) as response:
-                    rawdata = response.read()
-                    imgdata = b64encode(rawdata).decode()
-                    html_str =  '<img src="data:image/png;base64,%s" />' % imgdata
-                    view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
+        if "Fortran" not in view.settings().get('syntax'):
+            return
+        if view.settings().get('fortran_disable_latex', False):
+            return
+        if hover_zone != sublime.HOVER_TEXT:
+            return
+        scope = view.scope_name(point)
+        score = sublime.score_selector(scope, "meta.inline_latex.fortran")
+        if score > 0:
+            # We are hovering over some embedded latex
+            region = InlineLatexHover.extract_inline_latex_scope(view, point)
+            latex = view.substr(region)
+            # todo: get colors from theme popupCss
+            bg, fg = 'ffffff', '222222'
+            params = urllib.parse.urlencode({'cht': "tx", 'chl': latex, 'chf': 'bg,s,'+bg, 'chco': fg})
+            imgurl = "http://chart.googleapis.com/chart?"+params
+            with urllib.request.urlopen(imgurl) as response:
+                rawdata = response.read()
+                imgdata = b64encode(rawdata).decode()
+                html_str =  '<img src="data:image/png;base64,%s" />' % imgdata
+                view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
 
     @staticmethod
     def extract_inline_latex_scope(view, point):

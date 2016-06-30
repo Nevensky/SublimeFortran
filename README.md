@@ -5,17 +5,6 @@ Comprehensive syntax highlighting for Fortran in Sublime Text 3.
 
 Features:
 
- - Separate syntax definitions for fixed-format and modern Fortran.
-
- - Based on the new
-   [sublime-syntax file format](http://www.sublimetext.com/docs/3/syntax.html)
-   and therefore currently requires a recent [beta version](http://www.sublimetext.com/3)
-   of Sublime Text 3 (minimum build number 3084).
-
- - Code snippets
-
- - Indentation rules
-
  - Linter based on `gfortran` (requires the package [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to work), highlights errors while you work:
 
     <img src="images/linter_example.png" width="271px">
@@ -23,6 +12,21 @@ Features:
  - Hover over inline latex in comments to see it rendered in a popup:
 
     <img src="images/latex_example.png" width="351px">
+
+ - Hover over intrinsic functions to see documentation in a popup:
+
+    <img src="images/docs_example.png" width="422px">
+
+ - Code snippets
+
+ - Indentation rules
+
+ - Separate syntax definitions for fixed-format and modern Fortran.
+
+ - Based on the new
+   [sublime-syntax file format](http://www.sublimetext.com/docs/3/syntax.html)
+   and therefore currently requires a recent [beta version](http://www.sublimetext.com/3)
+   of Sublime Text 3 (minimum build number 3084).
 
 Pull requests are welcome :)
 
@@ -55,6 +59,18 @@ Pull requests are welcome :)
 
 
 ## Configuration ##
+
+## Disabling documentation and latex popups ##
+
+These can be turned on or off with the following settings:
+
+```JSON
+{
+    "fortran_disable_docs": true,
+    "fortran_disable_latex": true,
+}
+
+```
 
 ### Disabling rulers ###
 
