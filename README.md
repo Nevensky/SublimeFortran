@@ -16,7 +16,13 @@ Features:
 
  - Indentation rules
 
- - Linter based on `gfortran` (requires the package [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to work)
+ - Linter based on `gfortran` (requires the package [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to work), highlights errors while you work:
+
+    <img src="images/linter_example.png" width="271px">
+
+ - Hover over inline latex in comments to see it rendered in a popup:
+
+    <img src="images/latex_example.png" width="351px">
 
 Pull requests are welcome :)
 
