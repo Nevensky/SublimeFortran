@@ -26,7 +26,37 @@ Features:
 
 Pull requests are welcome :)
 
-## Disabling rulers ##
+
+
+
+## Installation ##
+
+### Option 1: via Package Control (recommended) ###
+
+1) Install [Package Control](https://packagecontrol.io/installation)
+
+2) Open the command pallete via `ctrl+shift+p` (Win, Linux) or `cmd+shift+p` (OS X)
+
+3) Choose `Package Control: Install Package`
+
+4) Choose `Fortran`
+
+5) The package will be installed and updated regularly by Package Control
+
+
+### Option 2: clone the repository
+
+1) In a terminal, `cd` into your Sublime Text Packages directory (which you can find via the menu option `Preferences → Browse Packages...`)
+
+2) Clone the repository: `git clone https://github.com/315234/SublimeFortran.git Fortran` (note the local directory name at the end of the command line)
+
+3) To update the package in future, return to the directory and run `git pull`
+
+
+
+## Configuration ##
+
+### Disabling rulers ###
 
 The Fixed Form Fortran syntax included in this package sets some rulers to help code indentation and show where the 72 character limit is. If you find these distracting, they can be disabled by creating a language specific settings file.
 
@@ -40,7 +70,7 @@ To do this, create a file called `FortranFixedForm.sublime-settings` in your `Pa
 
 
 
-## Using the linter ##
+### Using the linter ###
 
 This package includes a linter based on SublimeLinter3. SublimeLinter user settings can be modified by selecting `SublimeLinter Settings - User` from the Command Palette.
 
