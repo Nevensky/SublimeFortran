@@ -152,7 +152,7 @@ variables:
 
 contexts:
   main:
-    - include: Packages/SublimeFortran/grammars/OpenMP.sublime-syntax
+    - include: Packages/Fortran/grammars/OpenMP.sublime-syntax
     - include: allocation
     - include: associate_statement
     - include: block_statement
