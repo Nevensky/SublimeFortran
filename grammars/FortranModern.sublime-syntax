@@ -398,8 +398,6 @@ contexts:
         - match: ":"
           scope: keyword.operator.colon.fortran
         - include: expression
-    - match: .*
-      scope: invalid.illegal
 
   contains_statement:
     - match: (?xi:^ \s* (contains) \b \s* ({{eol_comment}})? $)
