@@ -1,7 +1,9 @@
 import sublime
 import sublime_plugin
 
-intrinsics = {k:"minihtml/"+k+".html" for k in [
+import os
+
+intrinsics = {k:k+".html" for k in [
 "ABORT", "ABS", "ACCESS", "ACHAR", "ACOS", "ACOSH", "ADJUSTL", "ADJUSTR", "AIMAG", "AINT", "ALARM", "ALL", "ALLOCATED", "AND", "ANINT", "ANY", "ASIN", "ASINH", "ASSOCIATED", "ATAN", "ATAN2",
 "ATANH", "ATOMIC_ADD", "ATOMIC_AND", "ATOMIC_CAS", "ATOMIC_DEFINE", "ATOMIC_FETCH_ADD", "ATOMIC_FETCH_AND", "ATOMIC_FETCH_OR", "ATOMIC_FETCH_XOR", "ATOMIC_OR", "ATOMIC_REF", "ATOMIC_XOR", "BACKTRACE", "BESSEL_J0", "BESSEL_J1", "BESSEL_JN", "BESSEL_Y0", "BESSEL_Y1", "BESSEL_YN", "BGE", "BGT",
 "BIT_SIZE", "BLE", "BLT", "BTEST", "C_ASSOCIATED", "C_F_POINTER", "C_F_PROCPOINTER", "C_FUNLOC", "C_LOC", "C_SIZEOF", "CEILING", "CHAR", "CHDIR", "CHMOD", "CMPLX", "CO_BROADCAST", "CO_MAX", "CO_MIN", "CO_REDUCE", "CO_SUM", "COMMAND_ARGUMENT_COUNT",
@@ -32,15 +34,14 @@ class InlineDocsHover(sublime_plugin.EventListener):
         if not word in intrinsics:
             return
         max_width, max_height = 600, 300
-        with open(intrinsics[word], "r", encoding="utf-8") as f:
-            html_str = f.read()
-            view.show_popup(html_str,
-                            sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                            point,
-                            max_width,
-                            max_height,
-                            lambda s: self.on_navigate(s, view, point),
-                            )
+        html_str = sublime.load_resource("Packages/Fortran/minihtml/"+intrinsics[word])
+        view.show_popup(html_str,
+                        sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+                        point,
+                        max_width,
+                        max_height,
+                        lambda s: self.on_navigate(s, view, point),
+                        )
 
     def on_navigate(self, href, view, point):
         # Get function name from URL
