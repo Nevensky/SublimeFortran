@@ -158,6 +158,7 @@ contexts:
     - include: block_statement
     - include: block_data_statement
     - include: call_statement
+    - include: case_statement
     - include: coarrays
     - include: comments
     - include: common-block
@@ -251,6 +252,30 @@ contexts:
         2: variable.other.fortran
         3: support.function.any-method
         4: support.function.any-method
+
+  case_statement:
+    - match: (?xi:^ \s* case \b )
+      scope: keyword.control.case
+      push: case_selector
+  case_selector:
+    - include: pop-at-end-of-line
+    - match: (?xi:\s* default)
+      scope: keyword.control.default
+      pop: true
+    - match: \(
+      push:
+        # select case construct label:
+        - match: \)\s+({{ident}})
+          captures:
+            1: entity.name.tag.construct_name.fortran
+          pop: true
+        - match: \)
+          pop: true
+        - match: ":"
+          scope: keyword.operator.colon.fortran
+        - include: expression
+    - match: .*
+      scope: invalid.illegal
 
   contains_statement:
     - match: (?xi:^ \s* (contains) \b \s* ({{eol_comment}})? $)
@@ -851,8 +876,6 @@ contexts:
         (?:
           \b( assign
             | then
-            | case\s+default
-            | case
             | continue
             | stop
             | pause
