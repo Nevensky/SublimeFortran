@@ -131,7 +131,7 @@ contexts:
         2: keyword.openmp.fortran
         3: keyword.openmp.fortran
     - include: openmp-clause-device
-    - include: openmp-clause-map
+    # - include: openmp-clause-map
     - include: openmp-clause-if
 
 
@@ -141,7 +141,7 @@ contexts:
 
   # Define which clauses are valid for particular statements
   openmp-clauses-parallel:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-if
     - include: openmp-clause-numthreads
     - include: openmp-clause-default
@@ -152,7 +152,7 @@ contexts:
     - include: openmp-clause-procbind
 
   openmp-clauses-do:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-private
     - include: openmp-clause-firstprivate
     - include: openmp-clause-lastprivate
@@ -162,23 +162,23 @@ contexts:
     - include: openmp-clause-ordered
 
   openmp-clauses-sections:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-private
     - include: openmp-clause-firstprivate
     - include: openmp-clause-lastprivate
 
   openmp-clauses-single:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-private
     - include: openmp-clause-firstprivate
 
   openmp-end-clauses-single:
-    - meta_scope: meta.openmp-end-clause.fortran
+    # - meta_scope: meta.openmp-end-clause.fortran
     - include: openmp-end-clause-copyprivate
     - include: openmp-end-clause-nowait
 
   openmp-clauses-simd:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-safelen
     - include: openmp-clause-linear
     - include: openmp-clause-aligned
@@ -188,7 +188,7 @@ contexts:
     - include: openmp-clause-collapse
 
   openmp-clauses-declare-simd:
-    - meta_scope: meta.openmp-clause.fortran
+    # - meta_scope: meta.openmp-clause.fortran
     - include: openmp-clause-simdlen
     - include: openmp-clause-linear
     - include: openmp-clause-aligned
