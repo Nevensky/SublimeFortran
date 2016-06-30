@@ -125,17 +125,17 @@ variables:
     |
       class \s* \( \s* \* \s* \)
     )
-  declaration_type_spec: | # TODO not used yet
-    (?xi)
-    (?:
-      {{declaration_type_spec_part1}}
-      (
-        \s* :: \s*
-      |
-        \s* , {{attr_spec_list}} \s* :: \s*
-      )?
-      {{entity_decl_list}}
-    )
+  # declaration_type_spec: | # TODO not used yet
+  #   (?xi)
+  #   (?:
+  #     {{declaration_type_spec_part1}}
+  #     (
+  #       \s* :: \s*
+  #     |
+  #       \s* , {{attr_spec_list}} \s* :: \s*
+  #     )?
+  #     {{entity_decl_list}}
+  #   )
 
   construct_name: (?xi:{{ident}} \s* (?=:)) # do/if statement label (a valid identifier followed by colon)
   stmt_label: (?xi:\b \d+ \b) # a statement label (a number)
