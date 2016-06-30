@@ -2,7 +2,7 @@ import sublime
 import sublime_plugin
 
 import urllib.parse
-import requests
+import urllib.request
 from base64 import b64encode
 
 class InlineLatexHover(sublime_plugin.EventListener):
@@ -22,10 +22,11 @@ class InlineLatexHover(sublime_plugin.EventListener):
                 bg, fg = 'ffffff', '222222'
                 params = urllib.parse.urlencode({'cht': "tx", 'chl': latex, 'chf': 'bg,s,'+bg, 'chco': fg})
                 imgurl = "http://chart.googleapis.com/chart?"+params
-                response = requests.get(imgurl)
-                imgdata = b64encode(response.content).decode()
-                html_str =  '<img src="data:image/png;base64,%s" />' % imgdata
-                view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
+                with urllib.request.urlopen(imgurl) as response:
+                    rawdata = response.read()
+                    imgdata = b64encode(rawdata).decode()
+                    html_str =  '<img src="data:image/png;base64,%s" />' % imgdata
+                    view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
 
     @staticmethod
     def extract_inline_latex_scope(view, point):
