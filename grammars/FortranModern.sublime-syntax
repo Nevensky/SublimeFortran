@@ -270,8 +270,9 @@ contexts:
     - match: (?=$)
       pop: true
   comment_inline_latex:
-    - meta_scope: meta.inline_latex.fortran
-    - meta_content_scope: markup.bold
+    # disable meta_scope to distinguish between adjacent inline latex regions
+    # - meta_scope: meta.inline_latex.fortran
+    - meta_content_scope: meta.inline_latex.fortran markup.bold
     - match: \\\w+
       scope: markup.italic
     - match: \$
