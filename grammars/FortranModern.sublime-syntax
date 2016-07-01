@@ -156,60 +156,191 @@ variables:
 contexts:
   main:
     - include: Packages/Fortran/grammars/OpenMP.sublime-syntax
+    - include: statement
+    - include: expression
+    - include: other
+
+  # top level contexts
+  statement:
     - include: allocation
     - include: associate_statement
-    - include: block_statement
     - include: block_data_statement
+    - include: block_statement
     - include: call_statement
     - include: case_statement
-    - include: coarrays
-    - include: comments
-    - include: common-block
-    - include: cycle-statement
+    - include: common_statement
     - include: contains_statement
+    - include: continue-statement
+    - include: cycle-statement
     - include: data-statement
-    - include: data-type-attributes
     - include: do_while_statement # must come before do
     - include: do_statement
-    - include: else_statement
     - include: else_if_statement
     - include: else_if_then_end_of_statement
+    - include: else_statement
     - include: end_construct
     - include: end_program_unit # must come after end_construct
     - include: entry_statement
-    - include: enumerator
+    - include: enum_statement
     - include: exit-statement
     - include: format-statement
     - include: goto_statement
     - include: if_block_statement
-    - include: illegal
     - include: implicit_statement
     - include: import_statement
     - include: include_statement
-    - include: io
-    - include: continue-statement
-    - include: literals # must come before operators
-    - include: arithmetic-operators
-    - include: m4-macros
-    - include: misc-flow-control
-    - include: namelist
+    - include: io_statements
+    - include: namelist_statement
     - include: nullify-statement
     - include: operator_statement
-    - include: preprocessor
-    - include: program-units
-    - include: public-private-protected
+    - include: program_unit_statements
+    - include: use-statement
     - include: return_statement
     - include: select_case_statement
-    - include: strings
-    - include: use-statement
     - include: user-defined-types
-    # intrinsics come last
+
+  expression:
+    - include: comments
+    - include: literals # must come before operators
+    - include: strings
+    - include: illegal_tabs
+    - include: arithmetic-operators
     - include: ieee-intrinsic-modules
     - include: ieee-intrinsics
     - include: fortran-2008-intrinsics
 
-    # - include: test_expression
-    # - include: expression
+  other:
+    # Stuff that is not correctly sorted into statement/expression
+    - include: preprocessor
+    - include: m4-macros
+    - include: misc-flow-control
+    - include: coarrays
+    - include: data-type-attributes
+    - include: public-private-protected
+
+
+
+
+  # EXPERIMENTAL
+  test_expression:
+    - match: test_expression
+      scope: invalid.illegal
+      push:
+        - include: expression_old
+        - match: end_test_expression
+          scope: invalid.illegal
+          pop: true
+  expression_old:
+    # match all expressions
+    # - include: '#backticks'
+    # - include: '#illegal-anno'
+    # - include: '#comments'
+    # - include: '#literal'
+    # - include: '#regexp'
+    # - include: '#string'
+    # - include: '#lambda'
+    # - include: '#illegal-operator'
+    # - include: '#operator'
+    # - include: '#curly-braces'
+    # - include: '#item-access'
+    # - include: '#list'
+    # - include: '#round-braces'
+    # - include: '#function-call'
+    # - include: '#builtin-functions'
+    # - include: '#builtin-types'
+    # - include: '#builtin-exceptions'
+    # - include: '#magic-names'
+    # - include: '#special-names'
+    # - include: '#illegal-names'
+    # - include: '#special-variables'
+    # - include: '#line-continuation'
+    # - include: '#ellipsis'
+    - include: literals
+    - include: function-call
+    - include: array-initialization
+    - include: round-braces
+    - include: square-braces
+    - include: operator
+  round-braces:
+    - match: \(
+      scope: punctuation.parenthesis.begin.fortran
+      push:
+        - meta_content_scope: inside-round-braces.fortran
+        - match: \)
+          scope: punctuation.parenthesis.end.fortran
+          pop: true
+        - include: expression_old
+  square-braces:
+    - match: \[
+      scope: punctuation.definition.array.begin.fortran
+      push:
+        - meta_content_scope: inside-square-braces.fortran
+        - match: \]
+          scope: punctuation.definition.array.end.fortran
+          pop: true
+        - include: expression_old
+  array-initialization:
+    - match: \(/
+      scope: punctuation.definition.array.begin.fortran
+      push:
+        - meta_content_scope: inside-array-initialization.fortran
+        - match: /\)
+          scope: punctuation.definition.array.end.fortran
+          pop: true
+        - include: expression_old
+  operator:
+    - match: |
+        (?x)
+              (\.(?:and | or | not)\.)
+            | \b (do | while | if | else) \b
+            | (\*\* | \* | \+ | - | / )
+            | (/= | == | >= | <= | < | >)
+            | (\.(?:eq|lt|le|gt|ge|ne|eqv|neqv)\.)
+      captures:
+        1: keyword.operator.logical.fortran
+        2: keyword.control.flow.fortran
+        3: keyword.operator.arithmetic.fortran
+        4: keyword.operator.comparison.fortran
+        5: keyword.operator.comparison.fortran
+  function-call:
+    - match: (?x:\b (?= [[:alpha:]_]\w* \s* \( ))
+      push:
+        - meta_scope: meta.function-call.fortran
+        - match: (\))
+          scope: punctuation.definition.arguments.end.fortran
+          pop: true
+        - include: function-name
+        - include: function-arguments
+  function-name:
+      - include: builtin-functions
+      # Because array access is the same as function call, we can't
+      # distinguish generic function calls from array access
+      # - match: (?x:\b ([[:alpha:]_]\w*) \b)
+      #   scope: meta.function-call.generic.fortran
+  builtin-functions:
+    - match: (?xi:sin|cos|tan|max|min)
+      scope: support.function.fortran
+  function-arguments:
+    - meta_content_scope: meta.function-call.arguments.fortran
+    - match: \(
+      scope: punctuation.definition.arguments.begin.fortran
+      push:
+        - match: (?=\))
+          pop: true
+        - match: ","
+          scope: punctuation.separator.arguments.fortran
+        - match: '\b([[:alpha:]_]\w*)\s*(=)(?!=)'
+          captures:
+            1: variable.parameter.function-call.fortran
+            2: keyword.operator.assignment.fortran
+        - match: =(?!=)
+          name: keyword.operator.assignment.fortran
+        - include: expression_old
+
+
+
+
+  # statements
 
   allocation:
     - match: (?xi:\b  (allocate|deallocate)  \b  \s*  \(  \s*  (\w+)  )
@@ -261,121 +392,6 @@ contexts:
         3: support.function.any-method
         4: support.function.any-method
 
-  # EXPERIMENTAL
-  test_expression:
-    - match: test_expression
-      scope: invalid.illegal
-      push:
-        - include: expression
-        - match: end_test_expression
-          scope: invalid.illegal
-          pop: true
-  expression:
-    # match all expressions
-    # - include: '#backticks'
-    # - include: '#illegal-anno'
-    # - include: '#comments'
-    # - include: '#literal'
-    # - include: '#regexp'
-    # - include: '#string'
-    # - include: '#lambda'
-    # - include: '#illegal-operator'
-    # - include: '#operator'
-    # - include: '#curly-braces'
-    # - include: '#item-access'
-    # - include: '#list'
-    # - include: '#round-braces'
-    # - include: '#function-call'
-    # - include: '#builtin-functions'
-    # - include: '#builtin-types'
-    # - include: '#builtin-exceptions'
-    # - include: '#magic-names'
-    # - include: '#special-names'
-    # - include: '#illegal-names'
-    # - include: '#special-variables'
-    # - include: '#line-continuation'
-    # - include: '#ellipsis'
-    - include: literals
-    - include: function-call
-    - include: array-initialization
-    - include: round-braces
-    - include: square-braces
-    - include: operator
-  round-braces:
-    - match: \(
-      scope: punctuation.parenthesis.begin.fortran
-      push:
-        - meta_content_scope: inside-round-braces.fortran
-        - match: \)
-          scope: punctuation.parenthesis.end.fortran
-          pop: true
-        - include: expression
-  square-braces:
-    - match: \[
-      scope: punctuation.definition.array.begin.fortran
-      push:
-        - meta_content_scope: inside-square-braces.fortran
-        - match: \]
-          scope: punctuation.definition.array.end.fortran
-          pop: true
-        - include: expression
-  array-initialization:
-    - match: \(/
-      scope: punctuation.definition.array.begin.fortran
-      push:
-        - meta_content_scope: inside-array-initialization.fortran
-        - match: /\)
-          scope: punctuation.definition.array.end.fortran
-          pop: true
-        - include: expression
-  operator:
-    - match: |
-        (?x)
-              (\.(?:and | or | not)\.)
-            | \b (do | while | if | else) \b
-            | (\*\* | \* | \+ | - | / )
-            | (/= | == | >= | <= | < | >)
-            | (\.(?:eq|lt|le|gt|ge|ne|eqv|neqv)\.)
-      captures:
-        1: keyword.operator.logical.fortran
-        2: keyword.control.flow.fortran
-        3: keyword.operator.arithmetic.fortran
-        4: keyword.operator.comparison.fortran
-        5: keyword.operator.comparison.fortran
-  function-call:
-    - match: (?x:\b (?= [[:alpha:]_]\w* \s* \( ))
-      push:
-        - meta_scope: meta.function-call.fortran
-        - match: (\))
-          scope: punctuation.definition.arguments.end.fortran
-          pop: true
-        - include: function-name
-        - include: function-arguments
-  function-name:
-      - include: builtin-functions
-      # Because array access is the same as function call, we can't
-      # distinguish generic function calls from array access
-      # - match: (?x:\b ([[:alpha:]_]\w*) \b)
-      #   scope: meta.function-call.generic.fortran
-  builtin-functions:
-    - match: (?xi:sin|cos|tan|max|min)
-      scope: support.function.fortran
-  function-arguments:
-    - meta_content_scope: meta.function-call.arguments.fortran
-    - match: \(
-      scope: punctuation.definition.arguments.begin.fortran
-      push:
-        - match: (?=\))
-          pop: true
-        - match: ","
-          scope: punctuation.separator.arguments.fortran
-        - match: '\b([[:alpha:]_]\w*)\s*(=)(?!=)'
-          captures:
-            1: variable.parameter.function-call.fortran
-            2: keyword.operator.assignment.fortran
-        - match: =(?!=)
-          name: keyword.operator.assignment.fortran
-        - include: expression
 
 
 
@@ -402,7 +418,7 @@ contexts:
           pop: true
         - match: ":"
           scope: keyword.operator.colon.fortran
-        - include: expression
+        - include: expression_old
 
   contains_statement:
     - match: (?xi:^ \s* (contains) \b \s* ({{eol_comment}})? $)
@@ -432,7 +448,7 @@ contexts:
     - match: $
       pop: true
 
-  common-block:
+  common_statement:
     # common block with name
     - match: (?xi:^  \s*  (common)  \s*  (/)({{ident}})(/) )
       captures:
@@ -631,7 +647,7 @@ contexts:
     - match: \,
       scope: punctuation.separator.fortran
 
-  enumerator:
+  enum_statement:
     # enum
     - match: |
         (?xi)
@@ -694,7 +710,7 @@ contexts:
         1: entity.name.tag.construct_name.fortran
         2: keyword.control.if.fortran
 
-  illegal:
+  illegal_tabs:
     # tabs are illegal
     - match: \t
       scope: invalid.illegal.tab.fortran
@@ -765,7 +781,7 @@ contexts:
     - match: (\')
       pop: true
 
-  namelist:
+  namelist_statement:
     # namelist /name/ variables
     - match: (?xi:^  \s*  (namelist)  \s*  (/)({{ident}})(/) )
       captures:
@@ -895,7 +911,7 @@ contexts:
 
 
 
-  program-units:
+  program_unit_statements:
     # program definition
     - match: |
         (?xi)
@@ -1060,7 +1076,7 @@ contexts:
         1: keyword.intent.fortran
         2: constant.language.fortran
 
-  io:
+  io_statements:
     # IO: open, close
     - match: (?xi:\b  (close|open)  \s*  \(  )
       captures:
