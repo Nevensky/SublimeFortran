@@ -204,7 +204,7 @@ contexts:
     - include: literals # must come before operators
     - include: strings
     - include: illegal_tabs
-    - include: arithmetic_operators
+    - include: operator
     - include: ieee_intrinsic_modules
     - include: ieee_intrinsics
     - include: fortran_2008_intrinsics
@@ -290,18 +290,30 @@ contexts:
         - include: expression_old
   operator:
     - match: |
-        (?x)
+        (?xi)
               (\.(?:and | or | not)\.)
-            | \b (do | while | if | else) \b
-            | (\*\* | \* | \+ | - | / )
+            | (//)
+            | (=>)
             | (/= | == | >= | <= | < | >)
+            | (\*\* | \* | \+ | - | / )
             | (\.(?:eq|lt|le|gt|ge|ne|eqv|neqv)\.)
       captures:
         1: keyword.operator.logical.fortran
-        2: keyword.control.flow.fortran
-        3: keyword.operator.arithmetic.fortran
+        2: keyword.operator.string-concatenation.fortran
+        3: keyword.operator.pointer-assignment.fortran
         4: keyword.operator.comparison.fortran
-        5: keyword.operator.comparison.fortran
+        5: keyword.operator.arithmetic.fortran
+        6: keyword.operator.comparison.fortran
+    # fixme: these probably shouldn't be here
+    - match: (?x:\:\:)
+      scope: keyword.operator.double-colon.fortran
+    - match: (?x:=)
+      scope: keyword.operator.assignment.fortran
+    - match: (?x:=)
+      scope: keyword.operator.assignment.fortran
+    - match: \%
+      scope: keyword.operator.member-access.fortran
+
   function-call:
     - match: (?x:\b (?= [[:alpha:]_]\w* \s* \( ))
       push:
@@ -1195,22 +1207,6 @@ contexts:
     #   scope: constant.numeric.fortran
 
 
-  arithmetic_operators:
-    # arithmetic operators (must come after floating point literals)
-    - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
-      scope: keyword.operator.arithmetic.fortran
-    # rename import operator/pointer assignment operator
-    - match: =>
-      scope: keyword.operator.pointer_assignment.fortran
-    # C style comparison operators
-    - match: (==|<|>|<=|>=)
-      scope: keyword.operator.c-style.fortran
-    # logical operators
-    - match: (?xi:\.  (and|or|eq|lt|le|gt|ge|ne|not|eqv|neqv)  \.)
-      scope: keyword.operator.logical.fortran
-    # type member access
-    - match: \%
-      scope: keyword.operator.member-access.fortran
 
 
 
