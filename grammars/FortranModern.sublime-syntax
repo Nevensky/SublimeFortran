@@ -201,13 +201,31 @@ contexts:
 
   expression:
     - include: comments
-    - include: literals # must come before operators
-    - include: strings
+    - include: literal # must come before operators
+    - include: string
     - include: illegal_tabs
+    # - include: illegal-operator
     - include: operator
+    # - include: curly-braces
+    # - include: item-access
+    # - include: list
+    - include: array-initialization
+    - include: round-braces
+    - include: square-braces
+    - include: data_type_attributes # fixme shoudn't be here, must come before function call due to intent(in)
+    - include: function-call
+    # - include: builtin-functions
+    # - include: builtin-types
+    # - include: builtin-exceptions
+    # - include: magic-names
+    # - include: special-names
+    # - include: illegal-names
+    # - include: special-variables
+    # - include: line-continuation
     - include: ieee_intrinsic_modules
     - include: ieee_intrinsics
     - include: fortran_2008_intrinsics
+
 
   other:
     # Stuff that is not correctly sorted into statement/expression
@@ -215,52 +233,12 @@ contexts:
     - include: m4_macros
     - include: misc_flow_control
     - include: coarrays
-    - include: data_type_attributes
     - include: public_private_protected
 
 
 
 
   # EXPERIMENTAL
-  test_expression:
-    - match: test_expression
-      scope: invalid.illegal
-      push:
-        - include: expression_old
-        - match: end_test_expression
-          scope: invalid.illegal
-          pop: true
-  expression_old:
-    # match all expressions
-    # - include: '#backticks'
-    # - include: '#illegal-anno'
-    # - include: '#comments'
-    # - include: '#literal'
-    # - include: '#regexp'
-    # - include: '#string'
-    # - include: '#lambda'
-    # - include: '#illegal-operator'
-    # - include: '#operator'
-    # - include: '#curly-braces'
-    # - include: '#item-access'
-    # - include: '#list'
-    # - include: '#round-braces'
-    # - include: '#function-call'
-    # - include: '#builtin-functions'
-    # - include: '#builtin-types'
-    # - include: '#builtin-exceptions'
-    # - include: '#magic-names'
-    # - include: '#special-names'
-    # - include: '#illegal-names'
-    # - include: '#special-variables'
-    # - include: '#line-continuation'
-    # - include: '#ellipsis'
-    - include: literals
-    - include: function-call
-    - include: array-initialization
-    - include: round-braces
-    - include: square-braces
-    - include: operator
   round-braces:
     - match: \(
       scope: punctuation.parenthesis.begin.fortran
@@ -269,7 +247,7 @@ contexts:
         - match: \)
           scope: punctuation.parenthesis.end.fortran
           pop: true
-        - include: expression_old
+        - include: expression
   square-braces:
     - match: \[
       scope: punctuation.definition.array.begin.fortran
@@ -278,7 +256,7 @@ contexts:
         - match: \]
           scope: punctuation.definition.array.end.fortran
           pop: true
-        - include: expression_old
+        - include: expression
   array-initialization:
     - match: \(/
       scope: punctuation.definition.array.begin.fortran
@@ -287,7 +265,7 @@ contexts:
         - match: /\)
           scope: punctuation.definition.array.end.fortran
           pop: true
-        - include: expression_old
+        - include: expression
   operator:
     - match: |
         (?xi)
@@ -347,7 +325,7 @@ contexts:
             2: keyword.operator.assignment.fortran
         - match: =(?!=)
           name: keyword.operator.assignment.fortran
-        - include: expression_old
+        - include: expression
 
 
 
@@ -430,7 +408,7 @@ contexts:
           pop: true
         - match: ":"
           scope: keyword.operator.colon.fortran
-        - include: expression_old
+        - include: expression
 
   contains_statement:
     - match: (?xi:^ \s* (contains) \b \s* ({{eol_comment}})? $)
@@ -836,7 +814,7 @@ contexts:
     - meta_scope: meta.preprocessor.fortran.include
     - match: (?=(?://|/\*))|$
       pop: true
-    - include: strings
+    - include: string
     - match: (<)
       push: preprocessor_include_angle_brackets
   preprocessor_include_angle_brackets:
@@ -869,7 +847,7 @@ contexts:
         1: entity.name.tag.construct_name.fortran
         2: keyword.control.select_case.fortran
 
-  strings:
+  string:
     - match: \'
       push: string_single
     - match: (\")
@@ -1153,7 +1131,7 @@ contexts:
   inside-format-group:
     # Represents the content between two () in a format group
     - meta_content_scope: meta.inside-format-group.fortran
-    - include: strings
+    - include: string
     - match: \(
       scope: open-format-group.fortran
       push: inside-format-group
@@ -1188,7 +1166,7 @@ contexts:
 
 
 
-  literals:
+  literal:
     # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
     - match: |
         (?xi)
@@ -1425,7 +1403,7 @@ contexts:
   # Stuff inside the parenthesis of format strings: print "(.....)"
   formatstring:
     - meta_content_scope: meta.format-string.fortran
-    - include: strings
+    - include: string
     - match: '{{formatdescr}}'
       scope: constant.numeric.format-descriptor.fortran
     - match: \)\"
