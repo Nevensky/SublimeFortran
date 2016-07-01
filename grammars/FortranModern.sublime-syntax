@@ -170,9 +170,9 @@ contexts:
     - include: case_statement
     - include: common_statement
     - include: contains_statement
-    - include: continue-statement
-    - include: cycle-statement
-    - include: data-statement
+    - include: continue_statement
+    - include: cycle_statement
+    - include: data_statement
     - include: do_while_statement # must come before do
     - include: do_statement
     - include: else_if_statement
@@ -182,8 +182,8 @@ contexts:
     - include: end_program_unit # must come after end_construct
     - include: entry_statement
     - include: enum_statement
-    - include: exit-statement
-    - include: format-statement
+    - include: exit_statement
+    - include: format_statement
     - include: goto_statement
     - include: if_block_statement
     - include: implicit_statement
@@ -191,32 +191,32 @@ contexts:
     - include: include_statement
     - include: io_statements
     - include: namelist_statement
-    - include: nullify-statement
+    - include: nullify_statement
     - include: operator_statement
     - include: program_unit_statements
-    - include: use-statement
+    - include: use_statement
     - include: return_statement
     - include: select_case_statement
-    - include: user-defined-types
+    - include: type_names
 
   expression:
     - include: comments
     - include: literals # must come before operators
     - include: strings
     - include: illegal_tabs
-    - include: arithmetic-operators
-    - include: ieee-intrinsic-modules
-    - include: ieee-intrinsics
-    - include: fortran-2008-intrinsics
+    - include: arithmetic_operators
+    - include: ieee_intrinsic_modules
+    - include: ieee_intrinsics
+    - include: fortran_2008_intrinsics
 
   other:
     # Stuff that is not correctly sorted into statement/expression
     - include: preprocessor
-    - include: m4-macros
-    - include: misc-flow-control
+    - include: m4_macros
+    - include: misc_flow_control
     - include: coarrays
-    - include: data-type-attributes
-    - include: public-private-protected
+    - include: data_type_attributes
+    - include: public_private_protected
 
 
 
@@ -465,14 +465,14 @@ contexts:
         1: keyword.common.fortran
       push: namelist-meta
 
-  cycle-statement:
+  cycle_statement:
     - match: (?xi:\b (cycle) \b \s* ({{ident}})?)
       captures:
         0: meta.cycle-statement.fortran
         1: keyword.control.cycle.fortran
         2: entity.name.tag.construct_name.fortran
 
-  data-statement:
+  data_statement:
     # data statement
     - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
       captures:
@@ -668,14 +668,14 @@ contexts:
       captures:
         1: keyword.enum.fortran
 
-  exit-statement:
+  exit_statement:
     - match: (?xi:\b (exit) \b \s* ({{ident}})?)
       captures:
         0: meta.exit-statement.fortran
         1: keyword.control.exit.fortran
         2: entity.name.tag.construct_name.fortran
 
-  format-statement:
+  format_statement:
     # IO: format statement
     - match: (?xi:^  \s*  (\d+)  \s+  (format)  \s*  (\()  )
       captures:
@@ -756,7 +756,7 @@ contexts:
     - match: (?xi:\b include \b)
       scope: keyword.control.include.fortran
 
-  m4-macros:
+  m4_macros:
     # M4 macro quoted strings, comments, variables and macro definitions
     - match: \`
       push: m4_macro_string
@@ -799,7 +799,7 @@ contexts:
     - match: ({{ident}})
       scope: variable.parameter.namelist.fortran
 
-  nullify-statement:
+  nullify_statement:
     # Nullify statement
     - match: (?x:\b  (?i:nullify)  \b  (?=\s*\()  )
       scope: support.function.fortran
@@ -879,7 +879,7 @@ contexts:
     - match: \"
       pop: true
 
-  use-statement:
+  use_statement:
     # use statements etc
     - match: |
         (?xi)
@@ -1020,7 +1020,7 @@ contexts:
 
 
 
-  misc-flow-control:
+  misc_flow_control:
     # statements controling the flow of the program
     - match: |
         (?xi)
@@ -1040,14 +1040,13 @@ contexts:
       scope: keyword.control.other.fortran
 
 
-  user-defined-types:
-    # types
+  type_names:
     - match: "{{declaration_type_spec_part1}}"
       scope: storage.type.fortran
 
 
 
-  continue-statement:
+  continue_statement:
     # continue label, possibly numbered
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
       captures:
@@ -1056,7 +1055,7 @@ contexts:
         2: keyword.continue.fortran
 
 
-  data-type-attributes:
+  data_type_attributes:
     # data type attributes
     - match: \b(?i:{{attribute}})\b
       scope: storage.modifier.fortran
@@ -1159,7 +1158,7 @@ contexts:
 
 
 
-  public-private-protected:
+  public_private_protected:
     # public/private/protected keywords
     - match: (?xi:^  \s*  \b(public|private|protected) \b )
       captures:
@@ -1196,7 +1195,7 @@ contexts:
     #   scope: constant.numeric.fortran
 
 
-  arithmetic-operators:
+  arithmetic_operators:
     # arithmetic operators (must come after floating point literals)
     - match: (?x:=  |  -  |  \+  |  /  |  \*  |  //  |  ::)
       scope: keyword.operator.arithmetic.fortran
@@ -1222,7 +1221,7 @@ contexts:
 
 
 
-  ieee-intrinsics:
+  ieee_intrinsics:
     # Intrinsic functions in Fortran 90
     # https://www.nsc.liu.se/~boein/f77to90/a5.html
     # 1. Function which determines if a certain argument is in an actual argument list
@@ -1295,7 +1294,7 @@ contexts:
         1: keyword.call.fortran
         2: support.function.fortran
 
-  fortran-2008-intrinsics:
+  fortran_2008_intrinsics:
     # Fortran 2008: http://www.nag.co.uk/nagware/np/r60_doc/nag_f2008.html#AUTOTOC_6
     # Mathematics
     - match: (?x:\b  (?i:acosh|asinh|atanh|hypot|norm2|erf|erfc|erfc_scaled|gamma|log_gamma)  \b  (?=\s*\()  )
@@ -1313,7 +1312,7 @@ contexts:
     - match: (?x:\b  (?i:character_kinds|integer_kinds|logical_kinds|real_kinds)  \b  )
       scope: support.constant.fortran
 
-  ieee-intrinsic-modules:
+  ieee_intrinsic_modules:
     ##########################
     # IEEE Intrinsic Modules #
     ##########################
