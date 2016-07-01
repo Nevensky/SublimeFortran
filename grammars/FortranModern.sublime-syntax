@@ -1173,6 +1173,8 @@ contexts:
 
   literal:
     # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
+    - match: \b[0-9]+(?!\.|e)\b
+      scope: constant.numeric.integer.fortran
     - match: |
         (?xi)
         (?:
