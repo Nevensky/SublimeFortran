@@ -671,6 +671,7 @@ contexts:
   goto_statement:
     - match: (?xi:^ \s* (go) \s* (to) \s+ (\d+) )
       captures:
+        0: meta.goto_statement.fortran
         1: keyword.control.goto.fortran
         2: keyword.control.goto.fortran
         3: entity.name.statement-label
