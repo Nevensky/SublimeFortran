@@ -127,17 +127,6 @@ variables:
     |
       class \s* \( \s* \* \s* \)
     )
-  # declaration_type_spec: | # TODO not used yet
-  #   (?xi)
-  #   (?:
-  #     {{declaration_type_spec_part1}}
-  #     (
-  #       \s* :: \s*
-  #     |
-  #       \s* , {{attr_spec_list}} \s* :: \s*
-  #     )?
-  #     {{entity_decl_list}}
-  #   )
 
   construct_name: (?xi:{{ident}} \s* (?=:)) # do/if statement label (a valid identifier followed by colon)
   stmt_label: (?xi:\b \d+ \b) # a statement label (a number)
@@ -204,7 +193,8 @@ contexts:
     - include: use_statement
     - include: return_statement
     - include: select_case_statement
-    - include: type_names
+    # - include: type_names
+    - include: declaration_type_spec
     - include: print_statement
     - include: write_statement
 
@@ -221,7 +211,10 @@ contexts:
     - include: array-initialization
     - include: round-braces
     - include: square-braces
-    - include: data_type_attributes # fixme shoudn't be here, must come before function call due to intent(in)
+    # - include: data_type_attributes # fixme shoudn't be here, must come before function call due to intent(in)
+    - include: ieee_intrinsic_modules
+    - include: ieee_intrinsics
+    - include: fortran_2008_intrinsics
     - include: function-call
     # - include: builtin-functions
     # - include: builtin-types
@@ -231,9 +224,6 @@ contexts:
     # - include: illegal-names
     # - include: special-variables
     # - include: line-continuation
-    - include: ieee_intrinsic_modules
-    - include: ieee_intrinsics
-    - include: fortran_2008_intrinsics
 
 
   other:
@@ -478,6 +468,90 @@ contexts:
         1: keyword.data.fortran
         2: storage.data.fortran
 
+  # Type declaration statement
+  declaration_type_spec:
+    - match: (?xi:^ \s* (?={{declaration_type_spec_part1}}))
+      push:
+        - include: pop-at-end-of-line
+        - meta_scope: meta.type-declaration.fortran
+        - match: (?xi:{{declaration_type_spec_part1}} )
+          scope: storage.type.fortran
+        - match: ","
+          push:
+            # List of variable attributes
+            - meta_scope: meta.attribute_spec_list.fortran
+            - include: data_type_attributes
+            - match: (?=::)
+              pop: true
+        - match: (?:::)
+          scope: keyword.control.double-colon.fortran
+        # Identifiers (entity_decl_list):
+        - match: (?={{ident}})
+          set:
+            - meta_scope: meta.entity_decl_list.fortran
+            - include: pop-at-end-of-line
+            - include: expression
+  # declaration_type_spec:
+  #   - match: (?xi:\b (?=character \b) )
+  #     set:
+  #       - meta_scope: meta.declaration_type_spec.fortran
+  #       - match: (?xi:\b character \b)
+  #         scope: storage.type.character.fortran
+  #       - include: char_selector
+  #   - match: (?xi:\b (?=(complex|integer|logical|real) \b) )
+  #     push: kind_selector
+  #   # - match: (?xi:\b (?=double \s+ (?:complex|precision) \b) )
+  #   #   scope: storage.type.fortran
+  # kind_selector:
+  #   - meta_content_scope: meta.kind_selector.fortran
+  #   - match: (?xi:(complex|integer|logical|real))
+  #     scope: storage.type.fortran
+  #   - match: (?xi:(\*) \s* (\d+))
+  #     captures:
+  #       2: constant.numeric.fortran
+  #     pop: true
+
+  # char_selector:
+  #   # form with brackets, i.e. character(8)
+  #   - match: \(
+  #     push:
+  #       - include: pop-at-closing-parenthesis
+  #       - match: \(
+  #         scope: punctuation.parenthesis.begin.fortran
+  #         push:
+  #           - include: pop-at-closing-parenthesis
+  #           - match: (?xi:\b (len) \b \s* (=) )
+  #             captures:
+  #               1: variable.parameter.fortran
+  #               2: keyword.operator.equals.fortran
+  #           - include: type_param_value
+  #   # form with asterisk, i.e. character*12 or character*(*)
+  #   - match: (?xi:\*)
+  #     scope: punctuation.char_selector.star.fortran
+  #     set:
+  #       # char_length (either const int or type_param_value in parens)
+  #       - match: (\d+|{{ident}})
+  #         scope: constant.numeric.char_length.fortran
+  #         pop: true
+  #       - match: \(
+  #         scope: punctuation.parenthesis.type_param_value.begin.fortran
+  #         push:
+  #           - include: pop-at-closing-parenthesis
+  #           - include: type_param_value
+  #       - match: \)
+  #         scope: punctuation.parenthesis.type_param_value.end.fortran
+  #         pop: true
+  # type_param_value:
+  #   - include: expression
+  #   - match: (\:)
+  #     scope: punctuation.parenthesis.type_param_value.colon.fortran
+  #   - match: (\*)
+  #     scope: punctuation.parenthesis.type_param_value.star.fortran
+
+
+
+
+
   do_while_statement: # (must come before do_statement)
     - match: |
         (?xi)
@@ -605,8 +679,6 @@ contexts:
                 - include: pop-at-end-of-line
                 - match: "{{ident}}"
                   scope: entity.name.function.fortran
-            - match: enum\b
-              scope: 
 
   entry_statement:
     - match: (?xi:^ \s* (entry) \s+ ({{ident}}))
@@ -1083,11 +1155,6 @@ contexts:
       scope: keyword.control.other.fortran
 
 
-  type_names:
-    - match: "{{declaration_type_spec_part1}}"
-      scope: storage.type.fortran
-
-
 
   continue_statement:
     # continue label, possibly numbered
@@ -1423,15 +1490,4 @@ contexts:
     - include: pop-at-end-of-line
     - match: (?=\))
       pop: true
-
-  # variabledeclaration:
-  #   - meta_content_scope: meta.variable-declaration.fortran
-  #   - include: comments
-  #   - match: (?<=\,)\s*((?i:save|implicit|dimension|parameter|allocatable|intent|pointer|target|private|public|protected|contiguous))
-  #     captures:
-  #       1: keyword.variable-attribute.fortran
-  #   - match: (::)
-  #     scope: keyword.operator.fortran
-  #   - match: $
-  #     pop: true
 
