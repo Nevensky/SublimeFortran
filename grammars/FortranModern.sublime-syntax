@@ -187,7 +187,7 @@ contexts:
     - include: import_statement
     - include: include_statement
     - include: io
-    - include: labelled-statements
+    - include: continue-statement
     - include: literals # must come before operators
     - include: arithmetic-operators
     - include: m4-macros
@@ -1030,21 +1030,13 @@ contexts:
 
 
 
-  labelled-statements:
+  continue-statement:
     # continue label, possibly numbered
     - match: (?xi:^  \s*  (\d+)?  \s*  (continue)  \s*  $)
       captures:
         0: meta.continue-label.fortran
         1: entity.name.statement-label.fortran
         2: keyword.continue.fortran
-    # labeled statement
-    - match: ^(    \d|   \d\d|  \d\d\d)
-      scope: entity.name.statement-label.fortran
-    # goto statement
-    - match: (?xi:\b  (go\s*to)  \s+  (\d+))
-      captures:
-        1: keyword.goto.fortran
-        2: entity.name.statement-label.fortran
 
 
   data-type-attributes:
