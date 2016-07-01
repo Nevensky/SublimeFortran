@@ -593,7 +593,7 @@ contexts:
         - meta_content_scope: end_program_unit.contents
         - include: pop-at-end-of-line
         - meta_scope: meta.end-program-unit.fortran
-        - match: \bend
+        - match: (?xi:\bend)
           scope: keyword.control.end.fortran
           push:
             - include: pop-at-end-of-line
