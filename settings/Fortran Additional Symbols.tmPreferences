@@ -5,7 +5,7 @@
     <key>name</key>
     <string>Symbol List</string>
     <key>scope</key>
-    <string>entity.name.namelist.fortran, entity.name.common.fortran, entity.name.statement-label.fortran, entity.name.tag</string>
+    <string>entity.name.namelist.fortran, entity.name.common.fortran, entity.name.statement-label.fortran, entity.name.tag.construct_name.fortran</string>
     <key>settings</key>
     <dict>
         <key>showInSymbolList</key>
