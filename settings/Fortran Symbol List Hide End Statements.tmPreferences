@@ -2,7 +2,7 @@
 <plist version="1.0">
 <dict>
     <key>scope</key>
-    <string>source.modern-fortran meta.end-statement.fortran</string>
+    <string>meta.end-statement.fortran, meta.end-program-unit.fortran, meta.goto-statement.fortran</string>
     <key>settings</key>
     <dict>
         <key>showInSymbolList</key>
