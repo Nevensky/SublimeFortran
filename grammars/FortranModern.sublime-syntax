@@ -68,6 +68,8 @@ variables:
     (?:
       {{specification_expression}}
     |
+      {{ident}} # hack
+    |
       \*
     |
       :
