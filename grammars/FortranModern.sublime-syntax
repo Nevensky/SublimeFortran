@@ -165,6 +165,7 @@ contexts:
     - include: coarrays
     - include: comments
     - include: common-block
+    - include: cycle-statement
     - include: contains_statement
     - include: data-statement
     - include: data-type-attributes
@@ -177,6 +178,7 @@ contexts:
     - include: end_program_unit # must come after end_construct
     - include: entry_statement
     - include: enumerator
+    - include: exit-statement
     - include: format-statement
     - include: goto_statement
     - include: if_block_statement
@@ -447,6 +449,13 @@ contexts:
         1: keyword.common.fortran
       push: namelist-meta
 
+  cycle-statement:
+    - match: (?xi:\b (cycle) \b \s* ({{ident}})?)
+      captures:
+        0: meta.cycle-statement.fortran
+        1: keyword.control.cycle.fortran
+        2: entity.name.tag.construct_name.fortran
+
   data-statement:
     # data statement
     - match: (?xi:^  \s*  (data)  \s+  (\w+)  \s*  (/))
@@ -642,6 +651,13 @@ contexts:
     - match: (?xi:^  \s*  (endenum) \b)
       captures:
         1: keyword.enum.fortran
+
+  exit-statement:
+    - match: (?xi:\b (exit) \b \s* ({{ident}})?)
+      captures:
+        0: meta.exit-statement.fortran
+        1: keyword.control.exit.fortran
+        2: entity.name.tag.construct_name.fortran
 
   format-statement:
     # IO: format statement
@@ -998,8 +1014,6 @@ contexts:
             | stop
             | pause
             | while
-            | cycle
-            | exit
             | error \s+ stop
             | where
             | elsewhere
