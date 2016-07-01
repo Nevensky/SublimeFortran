@@ -1391,7 +1391,14 @@ contexts:
     - match: \!
       set: comment
     - match: (?=\&)
-      push: line-continuation
+      push:
+        # Consume comments and newline then pop
+        - meta_scope: meta.line-continuation.fortran
+        - match: \&
+          scope: support.constant.line-continuation.fortran
+        - include: comments
+        - match: $\n
+          pop: true
     - match: $\n
       pop: true
     - match: ;
@@ -1403,14 +1410,6 @@ contexts:
     - match: \)
       pop: true
 
-  # Consume comments and newline then pop
-  line-continuation:
-    - meta_scope: meta.line-continuation.fortran
-    - match: \&
-      scope: support.constant.line-continuation.fortran
-    - include: comments
-    - match: $\n
-      pop: true
 
   # Stuff inside the parenthesis of format strings: print "(.....)"
   formatstring:
