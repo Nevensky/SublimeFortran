@@ -235,7 +235,7 @@ contexts:
           \s* ({{eol_comment}})?)
           $
       captures:
-        1: entity.name.tag.construct_name
+        1: entity.name.tag.construct_name.fortran
         2: keyword.control.block.fortran
         3: comment.line.fortran
 
@@ -548,7 +548,7 @@ contexts:
     # Matches all "end construct" statements, where a construct is required
     - match: (?xi:(?=end \s* {{construct_keyword}} \b ))
       push:
-        - meta_content_scope: meta.end-statement.1.fortran
+        - meta_content_scope: meta.end-statement.fortran
         - include: pop-at-end-of-line
         # end keyword
         - match: (?xi:end)
@@ -556,12 +556,12 @@ contexts:
           set:
             # construct keyword
             - include: pop-at-end-of-line
-            - meta_content_scope: meta.end-statement.1.fortran
+            - meta_content_scope: meta.end-statement.fortran
             - match: (?xi:{{construct_keyword}} \b)
               scope: keyword.control.construct.fortran
               set:
                 # possible construct label
-                - meta_content_scope: meta.end-statement.1.fortran
+                - meta_content_scope: meta.end-statement.fortran
                 - include: pop-at-end-of-line
                 - match: (?xi:{{ident}})
                   scope: entity.name.tag.construct_name.fortran
@@ -674,7 +674,7 @@ contexts:
         0: meta.goto_statement.fortran
         1: keyword.control.goto.fortran
         2: keyword.control.goto.fortran
-        3: entity.name.statement-label
+        3: entity.name.statement-label.fortran
 
   if_block_statement:
     - match: |
