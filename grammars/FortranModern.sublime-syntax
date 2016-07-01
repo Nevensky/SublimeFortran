@@ -147,7 +147,9 @@ variables:
   program_unit: (?xi:block\s+data|function|module|program|subroutine|submodule|type|interface|type)
   construct_keyword: (?xi:associate|block(?!\s+data\b)|do|forall|if|select|where)
 
-
+  hexadecimal_digit: (?xi:[0-9a-f])
+  hexadecimal_number: (?xi:{{hexadecimal_digit}}+)
+  hexadecimal_string: (?xi:('|") {{hexadecimal_number}}+ ('|"))
 
 
 
@@ -1180,6 +1182,12 @@ contexts:
     # boolean literals
     - match: (?i:\.true\.|\.false\.)
       scope: constant.language.fortran
+    - match: |
+        (?xi:\b (X|Z) {{hexadecimal_string}}
+            |         {{hexadecimal_string}} (X|Z) \b
+            |      Z  {{hexadecimal_number}}       \b
+        )
+      scope: constant.numeric.hexadecimal.fortran
     # # numeric literals (without an exponent)
     # - match: \b[0-9.]*\b
     #   scope: constant.numeric.fortran
