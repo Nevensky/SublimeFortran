@@ -150,6 +150,9 @@ variables:
   hexadecimal_digit: (?xi:[0-9a-f])
   hexadecimal_number: (?xi:{{hexadecimal_digit}}+)
   hexadecimal_string: (?xi:('|") {{hexadecimal_number}}+ ('|"))
+  octal_digit: (?xi:[0-8])
+  octal_number: (?xi:{{octal_digit}}+)
+  octal_string: (?xi:('|") {{octal_number}}+ ('|"))
 
 
 
@@ -1188,9 +1191,11 @@ contexts:
             |      Z  {{hexadecimal_number}}       \b
         )
       scope: constant.numeric.hexadecimal.fortran
-    # # numeric literals (without an exponent)
-    # - match: \b[0-9.]*\b
-    #   scope: constant.numeric.fortran
+    - match: |
+        (?xi:\b O {{octal_string}}
+            |     {{octal_string}} O \b
+        )
+      scope: constant.numeric.octal.fortran
 
 
 
