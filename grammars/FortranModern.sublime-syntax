@@ -490,6 +490,16 @@ contexts:
           set:
             - meta_scope: meta.entity_decl_list.fortran
             - include: pop-at-end-of-line
+            - match: ({{ident}})
+              scope: variable.other.fortran
+            - match: \(
+              scope: punctuation.parenthesis.variable-dimension.begin.fortran
+              push:
+                - meta_content_scope: meta.variable-dimension.fortran
+                - match: \)
+                  scope: punctuation.parenthesis.variable-dimension.end.fortran
+                  pop: true
+                - include: expression
             - include: expression
   # declaration_type_spec:
   #   - match: (?xi:\b (?=character \b) )
