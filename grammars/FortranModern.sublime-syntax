@@ -1208,10 +1208,26 @@ contexts:
 
 
   format_string:
+    - include: format_string_single_quotes
+    - include: format_string_double_quotes
+  format_string_single_quotes:
+    - match: (?xi:\' (?= \( .* \)\' ) ) # only complete format strings lexed
+      scope: string.quoted.single
+      push: inside-format-string-single
+  format_string_double_quotes:
     - match: (?xi:\" (?= \( .* \)\" ) ) # only complete format strings lexed
       scope: string.quoted.double
-      push: inside-format-string
-  inside-format-string:
+      push: inside-format-string-double
+  inside-format-string-single:
+    - meta_scope: meta.format-string.fortran
+    - meta_content_scope: meta.inside-format-string.fortran
+    - match: \(
+      scope: open-format-group.fortran
+      push: inside-format-group
+    - match: \'
+      scope: string.quoted.double close-format-string.fortran
+      pop: true
+  inside-format-string-double:
     - meta_scope: meta.format-string.fortran
     - meta_content_scope: meta.inside-format-string.fortran
     - match: \(
