@@ -9,11 +9,11 @@ Features:
 
     <img src="images/linter_example.png" width="271px">
 
- - Hover over inline latex in comments to see it rendered in a popup:
+ - Hover over inline latex in comments to see it rendered in a popup (requires build >= 3116):
 
     <img src="images/latex_example.png" width="351px">
 
- - Hover over intrinsic functions to see documentation in a popup:
+ - Hover over intrinsic functions to see documentation in a popup (requires build >= 3116):
 
     <img src="images/docs_example.png" width="422px">
 
