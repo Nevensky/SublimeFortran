@@ -4,6 +4,7 @@
 	"working_dir": "${file_path}",
 	"selector": "source.modern-fortran, source.fixedform-fortran",
 	"syntax": "GFortranBuild.sublime-syntax",
+	"shell": true,
 	"windows": {
 		"cmd": ["gfortran", "${file}", "-o", "${file_base_name}.exe"]
 	},
