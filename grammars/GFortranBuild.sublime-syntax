@@ -3,6 +3,7 @@
 name: GFortran Build Results
 file_extensions: []
 scope: source.gfortran-build
+hidden: true
 
 contexts:
   main:
