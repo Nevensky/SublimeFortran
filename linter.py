@@ -5,9 +5,14 @@
 
 # Since SublimeLinter is loaded after SublimeFortran, we need to manually import Linter
 import sublime, os, sys
-sys.path.append(os.path.join(sublime.packages_path(), 'SublimeLinter'))
-from SublimeLinter.lint import Linter, util
-sys.path.remove(os.path.join(sublime.packages_path(), 'SublimeLinter'))
+try:
+    sys.path.append(os.path.join(sublime.packages_path(), 'SublimeLinter'))
+    from SublimeLinter.lint import Linter, util
+    sys.path.remove(os.path.join(sublime.packages_path(), 'SublimeLinter'))
+except (ImportError):
+    print("SublimeFortran: Failed to load SublimeLinter")
+    class Linter(object):
+        pass
 
 
 class GfortranFixedForm(Linter):
