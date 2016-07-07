@@ -25,11 +25,14 @@ class InlineLatexHover(sublime_plugin.EventListener):
 
             params = urllib.parse.urlencode({'cht': "tx", 'chl': latex, 'chf': 'bg,s,'+bg, 'chco': fg})
             imgurl = "http://chart.googleapis.com/chart?"+params
-            with urllib.request.urlopen(imgurl) as response:
+            try:
+                response = urllib.request.urlopen(imgurl)
                 rawdata = response.read()
                 imgdata = b64encode(rawdata).decode()
                 html_str =  '<img src="data:image/png;base64,%s" />' % imgdata
-                view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
+            except (urllib.error.HTTPError) as e:
+                html_str =  '<span class="error">%s<span/>' % str(e)
+            view.show_popup(html_str, sublime.HIDE_ON_MOUSE_MOVE, point)
 
     @staticmethod
     def extract_inline_latex_scope(view, point):
