@@ -1275,9 +1275,18 @@ contexts:
 
 
   literal:
-    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
-    - match: \b[0-9]+(?!\.|e)\b
+    # integers, which may be directly followed by .and. etc
+    - match: |
+        (?xi)
+        (?:\b
+          [0-9]+
+          (?! \. (?!and|or|not|eq|lt|le|gt|ge|ne|eqv|neqv)
+            | e
+          )
+          \b
+        )
       scope: constant.numeric.integer.fortran
+    # floating point literals with an exponent (must come before -+ operators) and optional underscore kind
     - match: |
         (?xi)
         (?:
