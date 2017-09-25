@@ -19,9 +19,6 @@ contexts:
     - match: ^     (\d|\*)
       scope: comment.line-continuation.numeric.fortran
 
-    # tabs are illegal
-    - match: \t
-      scope: invalid.illegal.tab.fortran
     # # lines over 72 characters are illegal
     # - match: (?xi:(?<=^ \s [^!]{71}) \s* ([^!\n\s][^!\n]*)  )
     #   captures: 

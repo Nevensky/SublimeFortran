@@ -202,7 +202,6 @@ contexts:
     - include: comments
     - include: literal # must come before operators
     - include: string
-    - include: illegal_tabs
     # - include: illegal-operator
     - include: operator
     # - include: curly-braces
@@ -790,11 +789,6 @@ contexts:
       captures:
         1: entity.name.tag.construct_name.fortran
         2: keyword.control.if.fortran
-
-  illegal_tabs:
-    # tabs are illegal
-    - match: \t
-      scope: invalid.illegal.tab.fortran
 
   implicit_statement:
     - match: (?xi:^ \s* (implicit) \s+ (?=none|{{declaration_type_spec_part1}}))
