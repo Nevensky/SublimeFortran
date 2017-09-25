@@ -202,7 +202,6 @@ contexts:
     - include: comments
     - include: literal # must come before operators
     - include: string
-    - include: illegal_tabs
     # - include: illegal-operator
     - include: operator
     # - include: curly-braces
