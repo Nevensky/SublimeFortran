@@ -7,7 +7,7 @@
 import sublime, os, sys
 try:
     sys.path.append(os.path.join(sublime.packages_path(), 'SublimeLinter'))
-    from SublimeLinter.lint import Linter, util
+    from SublimeLinter.lint import Linter
     sys.path.remove(os.path.join(sublime.packages_path(), 'SublimeLinter'))
 except (ImportError):
     print("SublimeFortran: Failed to load SublimeLinter")
@@ -33,6 +33,7 @@ class GfortranFixedForm(Linter):
         r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
     )
     tempfile_suffix = "f"
+    on_stderr = True
 
 class GfortranModern(Linter):
     """Provides an interface to gfortran."""
@@ -52,3 +53,4 @@ class GfortranModern(Linter):
         r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
     )
     tempfile_suffix = "f90"
+    on_stderr = True
