@@ -24,14 +24,24 @@ class GfortranFixedForm(Linter):
     version_re = r'(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 4.0'
     multiline = True
-    regex = (
-        # filename:line:col: is common for multiline and single line warnings
-        r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
-        # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
-        r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
-        # Finally we have (Error|Warning): message to the end of the line
-        r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
-    )
+    if (sys.platform == 'win32'):
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[a-zA-Z]:[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
+    else:
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
     tempfile_suffix = "f"
     on_stderr = True
 
@@ -44,13 +54,23 @@ class GfortranModern(Linter):
     version_re = r'(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 4.0'
     multiline = True
-    regex = (
-        # filename:line:col: is common for multiline and single line warnings
-        r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
-        # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
-        r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
-        # Finally we have (Error|Warning): message to the end of the line
-        r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
-    )
+    if (sys.platform == 'win32'):
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[a-zA-Z]:[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
+    else:
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
     tempfile_suffix = "f90"
     on_stderr = True
