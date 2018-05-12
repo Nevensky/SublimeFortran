@@ -64,8 +64,8 @@ class InlineLatexHover(sublime_plugin.EventListener):
             color_dict = view.style()
             bg = color_dict["background"]
             fg = color_dict["foreground"]
-            # Remove leading #
-            bg = bg[1:]
+            # Remove leading # and add alpha channel in background color
+            bg = bg[1:] + "0D"
             fg = fg[1:]
             
         elif scheme_path.lower().endswith(".tmtheme"):
@@ -104,7 +104,7 @@ class InlineLatexHover(sublime_plugin.EventListener):
             except KeyError:
                 try:
                     # Get colors from the main section of scheme_data["settings"]
-                    bg = scheme_data["settings"][0]["settings"]["background"][1:]
+                    bg = scheme_data["settings"][0]["settings"]["background"][1:] + "0D"
                     fg = scheme_data["settings"][0]["settings"]["foreground"][1:]
                 except KeyError:
                     bg = "000000"
