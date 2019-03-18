@@ -826,7 +826,7 @@ contexts:
   import_statement:
     - match: (?xi:\b import \b)
       scope: keyword.control.import.fortran
-    
+
   include_statement:
     - match: (?xi:\b include \b)
       scope: keyword.control.include.fortran
@@ -941,16 +941,16 @@ contexts:
     - meta_scope: string.quoted.single.fortran
     - match: \'\'
       scope: constant.character.escape.apostrophe.fortran
-    - match: '{{escapeseq}}'
-      scope: constant.character.escape.backslash.fortran
+    # - match: '{{escapeseq}}'
+    #   scope: constant.character.escape.backslash.fortran
     - match: \'
       pop: true
   string_double:
     - meta_scope: string.quoted.double.fortran
     - match: \"\"
       scope: constant.character.escape.quote.fortran
-    - match: '{{escapeseq}}'
-      scope: constant.character.escape.backslash.fortran
+    # - match: '{{escapeseq}}'
+    #   scope: constant.character.escape.backslash.fortran
     - match: \"
       pop: true
 
@@ -1135,7 +1135,7 @@ contexts:
 
 
 
-    
+
 
 
 
