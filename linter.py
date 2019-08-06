@@ -17,40 +17,85 @@ except (ImportError):
 
 class GfortranFixedForm(Linter):
     """Provides an interface to gfortran."""
-    syntax = 'fortranfixedform'
     cmd = 'gfortran -cpp -fsyntax-only -Wall'
-    executable = None
-    version_args = '--version'
-    version_re = r'(?P<version>\d+\.\d+\.\d+)'
-    version_requirement = '>= 4.0'
     multiline = True
-    regex = (
-        # filename:line:col: is common for multiline and single line warnings
-        r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
-        # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
-        r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
-        # Finally we have (Error|Warning): message to the end of the line
-        r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
-    )
-    tempfile_suffix = "f"
+
+    # Migrated this upward to keep things neat
     on_stderr = True
+    tempfile_suffix = "f"
+    
+    # Adding defaults:selector arg because this is required by SublimeLinter as of July 2019
+    defaults = {
+        'selector': 'source.fixedform-fortran'
+    }
+    
+    # Commenting out args that are no longer used by SublimeLinter as of July 2019
+    # executable = None
+    # version_args = '--version'
+    # version_re = r'(?P<version>\d+\.\d+\.\d+)'
+    # version_requirement = '>= 4.0'
+
+    # Split this into two paths for Windows systems and otherwise
+    if (sys.platform == 'win32'):
+        # This Regex block is copied from Kailang's Comment in Issue #28
+        regex = (
+            r'.*:(?P<line>\d+):(?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code,
+            # a newline, a col number, a newline)
+            r'(?:(\s*.*\s*\d+\s*))'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
+    else:
+        # This Regex block is retained from the previous commit 
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
 
 class GfortranModern(Linter):
     """Provides an interface to gfortran."""
-    syntax = 'fortranmodern'
     cmd = 'gfortran -cpp -fsyntax-only -Wall'
-    executable = None
-    version_args = '--version'
-    version_re = r'(?P<version>\d+\.\d+\.\d+)'
-    version_requirement = '>= 4.0'
     multiline = True
-    regex = (
-        # filename:line:col: is common for multiline and single line warnings
-        r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
-        # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
-        r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
-        # Finally we have (Error|Warning): message to the end of the line
-        r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
-    )
+
+    # Migrated this upward to keep things neat
     tempfile_suffix = "f90"
     on_stderr = True
+
+    # Adding defaults:selector arg because this is required by SublimeLinter as of July 2019
+    defaults = {
+        'selector': 'source.modern-fortran'
+    }
+    
+    # Commenting out args that are no longer used by SublimeLinter as of July 2019
+    #executable = None
+    #version_args = '--version'
+    #version_re = r'(?P<version>\d+\.\d+\.\d+)'
+    #version_requirement = '>= 4.0'
+
+    # Split this into two paths for Windows systems and otherwise
+    if (sys.platform == 'win32'):
+        # This Regex block is copied from Kailang's Comment in Issue #28
+        regex = (
+            r'.*:(?P<line>\d+):(?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code,
+            # a newline, a col number, a newline)
+            r'(?:(\s*.*\s*\d+\s*))'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
+    else:
+        # This Regex block is retained from the previous commit 
+        regex = (
+            # filename:line:col: is common for multiline and single line warnings
+            r'^[^:]*:(?P<line>\d+)[:.](?P<col>\d+):'
+            # Then we either have a space or (a newline, a newline, some source code, a newline, a col number, a newline)
+            r'(?:\s|$\r?\n^$\r?\n^.*$\r?\n^\s*\d$\r?\n)'
+            # Finally we have (Error|Warning): message to the end of the line
+            r'(?:(?P<error>Error|Fatal\sError)|(?P<warning>Warning)): (?P<message>.*$)'
+        )
+    
