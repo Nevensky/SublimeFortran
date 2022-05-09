@@ -1323,7 +1323,7 @@ contexts:
     - match: (?x:\b  (?i:present)  \b  (?=\s*\()  )
       scope: support.function.fortran
     # 2. Numerical functions
-    - match: (?x:\b  (?i:abs|aimag|aint|anint|cmplx|conjg|dble|dim|dprod|int|max|min|mod|nint|real|sign)  \b  (?=\s*\()  )
+    - match: (?x:\b  (?i:abs|aimag|aint|anint|dcmplx|cmplx|conjg|dble|dim|dprod|int|max|min|mod|nint|real|sign)  \b  (?=\s*\()  )
       scope: support.function.fortran
     - match: (?x:\b  (?i:ceiling|floor|modulo)  \b  (?=\s*\()  )
       scope: support.function.fortran
