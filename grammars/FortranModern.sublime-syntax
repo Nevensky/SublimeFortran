@@ -6,7 +6,7 @@ scope: source.modern-fortran
 
 variables:
   ident: '[A-Za-z_][A-Za-z_0-9]*'
-  modifier: '(?xi:elemental|pure|impure|recursive|module)'
+  modifier: '(?xi:elemental|impure|module|non_recursive|pure|recursive|simple)'
   # attr_spec: |
   #   (?xi)
   #   (?:
