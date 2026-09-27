@@ -213,6 +213,7 @@ contexts:
     # - include: data_type_attributes # fixme shoudn't be here, must come before function call due to intent(in)
     - include: ieee_intrinsic_modules
     - include: ieee_intrinsics
+    - include: iso_fortran_env
     - include: fortran_2008_intrinsics
     - include: function-call
     # - include: builtin-functions
@@ -1401,11 +1402,23 @@ contexts:
     - match: (?x:\b  (?i:execute_command_line|storage_size|is_contiguous)  \b  (?=\s*\()  )
       scope: support.function.fortran
 
-    # ISO_FORTRAN_ENV
-    - match: (?x:\b  (?i:int8|int16|int32|int64|real32|real64|real128)  \b  )
+  iso_fortran_env:
+    # kind constants
+    - match: (?x:\b  (?i:int8|int16|int32|int64|real16|real32|real64|real128|logical8|logical16|logical32|logical64)  \b  )
       scope: support.constant.fortran
     - match: (?x:\b  (?i:character_kinds|integer_kinds|logical_kinds|real_kinds)  \b  )
       scope: support.constant.fortran
+    - match: (?x:\b  (?i:atomic_int_kind|atomic_logical_kind)  \b  )
+      scope: support.constant.fortran
+    # I/O
+    - match: (?xi:\b (?:input_unit|output_unit|error_unit|iostat_end|iostat_eor|iostat_inquire_internal_unit) \b)
+      scope: support.constant.fortran
+    # storage sizes
+    - match: (?xi:\b (?:numeric_storage_size|character_storage_size|file_storage_size) \b)
+      scope: support.constant.fortran
+    # inquiry functions
+    - match: (?xi:\b (?:compiler_version|compiler_options) \b (?=\s*\())
+      scope: support.function.fortran
 
   ieee_intrinsic_modules:
     ##########################
