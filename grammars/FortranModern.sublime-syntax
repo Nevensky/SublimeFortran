@@ -32,6 +32,7 @@ variables:
     (?xi)
     (?:
         allocatable
+      | asynchronous
       | pointer
       | target
       | equivalence
@@ -44,6 +45,8 @@ variables:
       | private
       | public
       | protected
+      | value
+      | volatile
     )
   # linecont: '(?x:\s* & \s* (!.*)? $)' # matches possible space, amersand, possible space, possible comment, end of line, possible newline
   formatdescr: (?xi:(\d+)?  (/|pe|[aeigfxp])  (\d+)?  \.?  (\d+)? )
