@@ -141,7 +141,7 @@ variables:
   hexadecimal_digit: (?xi:[0-9a-f])
   hexadecimal_number: (?xi:{{hexadecimal_digit}}+)
   hexadecimal_string: (?xi:('|") {{hexadecimal_number}}+ ('|"))
-  octal_digit: (?xi:[0-8])
+  octal_digit: (?xi:[0-7])
   octal_number: (?xi:{{octal_digit}}+)
   octal_string: (?xi:('|") {{octal_number}}+ ('|"))
 
